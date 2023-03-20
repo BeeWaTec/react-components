@@ -1,22 +1,21 @@
 import { faDiscord } from "@fortawesome/free-brands-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
-const navigation = {
-    main: [
-        //{ name: 'Terms and Conditions', href: '/terms-and-conditions' },
-        { name: 'Privacy Policy', href: '/privacy' },
-        { name: 'Imprint', href: '/imprint' },
-    ],
-    social: [
-        {
-            name: 'Discord',
-            href: 'https://discord.gg/vBWadeb',
-            icon: faDiscord,
-        },
-    ],
+interface DefaultFooterProps {
+    navigation: {
+        main: {
+            name: string,
+            href: string,
+        }[],
+        social: {
+            name: string,
+            href: string,
+            icon: any,
+        }[],
+    }
+    copyright?: string
 }
-
-export default function DefaultFooter() {
+export default function DefaultFooter({ navigation, copyright }: DefaultFooterProps) {
     return (
         <footer className="bg-white border-t border-gray-200">
             <div className="max-w-7xl mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8">
@@ -37,7 +36,7 @@ export default function DefaultFooter() {
                         </a>
                     ))}
                 </div>
-                <p className="mt-8 text-center text-base text-gray-400">&copy; 2023 PurePortal. All rights reserved.</p>
+                <p className="mt-8 text-center text-base text-gray-400">{copyright}</p>
             </div>
         </footer>
     )
