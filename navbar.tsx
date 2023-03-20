@@ -19,14 +19,14 @@ interface DefaultNavbarType {
     user?: {
         name?: string,
         picture?: string | JSX.Element,
-        links?: [
+        links?: Array<
             {
                 name: string,
                 href?: string,
                 onClick?: () => void,
                 seperatorAfter?: boolean,
-            }?
-        ],
+            }
+        >,
         [key: string]: any,
     },
     showUser?: boolean,
