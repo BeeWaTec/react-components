@@ -112,13 +112,19 @@ function DefaultNavbar({ navigationLinks = [], logo, logoText, user, showUser = 
                                                     <Menu.Button className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                                                         <span className="sr-only">Open user menu</span>
                                                         {user.picture &&
-                                                            <Image
-                                                                width={32}
-                                                                height={32}
-                                                                className="rounded-full"
-                                                                src={user.picture}
-                                                                alt={`Profile picture of ${user.name}`}
-                                                            />
+                                                            <>
+                                                                {typeof user.picture === 'string' ?
+                                                                    <Image
+                                                                        width={32}
+                                                                        height={32}
+                                                                        className="rounded-full"
+                                                                        src={user.picture as string}
+                                                                        alt={`Profile picture of ${user.name}`}
+                                                                    />
+                                                                    :
+                                                                    user.picture
+                                                                }
+                                                            </>
                                                         }
                                                         {!user.picture &&
                                                             <UserIcon className="h-8 w-8 rounded-full text-gray-300" aria-hidden="true" />
