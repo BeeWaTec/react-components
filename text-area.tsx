@@ -1,5 +1,5 @@
 import React, { forwardRef, MutableRefObject, ReactNode, useEffect, useRef, useState } from 'react'
-import axiosInstance from '@/helpers/axios'
+import axiosInstance from '@/helpers/base/axios'
 import { toast } from 'react-toastify'
 
 interface TextAreaProps {
