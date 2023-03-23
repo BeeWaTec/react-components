@@ -16,6 +16,8 @@ interface DefaultNavbarType {
             link: string,
         }?
     ],
+    elementsBeforeUser?: Array<JSX.Element>,
+    elementsAfterUser?: Array<JSX.Element>,
     user?: {
         name?: string,
         picture?: string | JSX.Element,
@@ -32,7 +34,7 @@ interface DefaultNavbarType {
     showUser?: boolean,
     userIsLoading?: boolean,
 }
-function DefaultNavbar({ navigationLinks = [], logo, logoText, user, showUser = false, userIsLoading }: DefaultNavbarType) {
+function DefaultNavbar({ navigationLinks = [], logo, logoText, user, showUser = false, userIsLoading, elementsBeforeUser = [], elementsAfterUser = [] }: DefaultNavbarType) {
 
     return (
         <Disclosure as="nav" className="bg-white shadow">
@@ -97,6 +99,13 @@ function DefaultNavbar({ navigationLinks = [], logo, logoText, user, showUser = 
                                 <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start" />
 
                                 {/* Profile dropdown */}
+                                <>
+                                    {elementsBeforeUser && elementsBeforeUser.length > 0 &&
+                                        elementsBeforeUser.map((element, index) => (
+                                            element
+                                        ))
+                                    }
+                                </>
                                 {showUser &&
                                     <>
                                         {userIsLoading &&
@@ -173,6 +182,13 @@ function DefaultNavbar({ navigationLinks = [], logo, logoText, user, showUser = 
                                         }
                                     </>
                                 }
+                                <>
+                                    {elementsAfterUser && elementsAfterUser.length > 0 &&
+                                        elementsAfterUser.map((element, index) => (
+                                            element
+                                        ))
+                                    }
+                                </>
                             </div>
                         </div>
                     </div>
