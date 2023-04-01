@@ -29,9 +29,11 @@ interface InputFieldProps {
     onChange?: (value: React.ChangeEvent<HTMLInputElement>) => void,
     onDeclinePressed?: () => void,
     onAcceptPressed?: () => void,
+    onSuffixPressed?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void,
+    onPrefixPressed?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void,
     keepDeclineButtonActive?: boolean,
 }
-const InputField = forwardRef(({ className, keepDeclineButtonActive = true, updateValueKey = 'value', updateValueMethod = 'post', disabled = false, showSpinner = false, requireAccept = false, onDeclinePressed, onAcceptPressed, ...props }: InputFieldProps, ref) => {
+const InputField = forwardRef(({ className, keepDeclineButtonActive = true, updateValueKey = 'value', updateValueMethod = 'post', disabled = false, showSpinner = false, requireAccept = false, onDeclinePressed, onAcceptPressed, onSuffixPressed, onPrefixPressed, ...props }: InputFieldProps, ref) => {
 
     // Reference to input field
     const inputRef = useRef() as MutableRefObject<HTMLInputElement>
@@ -177,17 +179,26 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
 
             {/* Prefix */}
             {typeof props.prefix == 'string' && props.prefix !== '' &&
-                <div className="inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none">
+                <div
+                    className={`inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none ${onPrefixPressed ? 'cursor-pointer' : ''}`}
+                    onClick={(e) => onPrefixPressed && onPrefixPressed(e)}
+                >
                     <span className="text-gray-500">{props.prefix}</span>
                 </div>
             }
             {typeof props.prefix !== 'string' && typeof props.prefix !== 'undefined' && props.prefix !== null &&
-                <div className="inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none">
+                <div
+                    className={`inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none ${onPrefixPressed ? 'cursor-pointer' : ''}`}
+                    onClick={(e) => onPrefixPressed && onPrefixPressed(e)}
+                >
                     {props.prefix}
                 </div>
             }
             {((typeof props.suffix == 'string' && props.suffix !== '') || (typeof props.suffix !== 'undefined' && props.suffix !== null)) &&
-                <div className="inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none">
+                <div
+                    className={`inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none ${onPrefixPressed ? 'cursor-pointer' : ''}`}
+                    onClick={(e) => onPrefixPressed && onPrefixPressed(e)}
+                >
                     <div className="w-px h-6 bg-gray-300"></div>
                 </div>
             }
@@ -195,7 +206,8 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
             {/* Input Field */}
             <input
                 ref={inputRef}
-                className={`inset-y-0 items-center grow shrink-0 pr-2 pl-2 ${props.type == 'number' ? 'text-right' : 'text-left'} disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed`}
+                className={`inset-y-0 items-center grow pr-2 pl-2 ${props.type == 'number' ? 'text-right' : 'text-left'} disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed`}
+                style={{ minWidth: 0, maxWidth: '100%' }}
                 type={typeof props.type !== 'undefined' ? props.type : 'text'}
                 name={typeof props.name !== 'undefined' ? props.name : ''}
                 id={props.id}
@@ -216,17 +228,26 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
 
             {/* Suffix */}
             {((typeof props.suffix == 'string' && props.suffix !== '') || (typeof props.suffix !== 'undefined' && props.suffix !== null)) &&
-                <div className="inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none">
+                <div
+                    className={`inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none ${onSuffixPressed ? 'cursor-pointer' : ''}`}
+                    onClick={(e) => onSuffixPressed && onSuffixPressed(e)}
+                >
                     <div className="w-px h-6 bg-gray-300"></div>
                 </div>
             }
             {typeof props.suffix == 'string' && props.suffix !== '' &&
-                <div className="inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none">
+                <div
+                    className={`inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none ${onSuffixPressed ? 'cursor-pointer' : ''}`}
+                    onClick={(e) => onSuffixPressed && onSuffixPressed(e)}
+                >
                     <span className="text-gray-500">{props.suffix}</span>
                 </div>
             }
             {typeof props.suffix !== 'string' && typeof props.suffix !== 'undefined' && props.suffix !== null &&
-                <div className="inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none">
+                <div
+                    className={`inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none ${onSuffixPressed ? 'cursor-pointer' : ''}`}
+                    onClick={(e) => onSuffixPressed && onSuffixPressed(e)}
+                >
                     {props.suffix}
                 </div>
             }
@@ -237,7 +258,7 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
                     <div className="inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none">
                         <div className="w-px h-6 bg-gray-300"></div>
                     </div>
-                    <div className="inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none">
+                    <div className="inset-y-0 grow-0 flex flex-col justify-center items-center select-none">
                         <div className="flex flex-col justify-center items-center">
                             <button
                                 className="w-4 h-4 text-gray-500 hover:text-gray-700 focus:outline-none"
