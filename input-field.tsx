@@ -26,7 +26,9 @@ interface InputFieldProps {
     updateValueParams?: any,
     updateValueKey?: string,
     requireAccept?: boolean,
+    readOnly?: boolean,
     onChange?: (value: React.ChangeEvent<HTMLInputElement>) => void,
+    onPaste?: (value: React.ClipboardEvent<HTMLInputElement>) => void,
     onDeclinePressed?: () => void,
     onAcceptPressed?: () => void,
     onSuffixPressed?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void,
@@ -120,6 +122,12 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
         asyncUseEffect();
     }, [])
 
+    // Update value when props change
+    useEffect(() => {
+        setValue(props.value)
+        setValueEdited(undefined)
+    }, [props.value])
+
     return (
         <div className={`relative flex items-stretch w-full border-2 border-solid rounded-md border-gray-300 shadow-sm focus:border-theme-primary-light focus:ring-indigo-500 sm:text-sm h-8 ${className}`}>
 
@@ -206,7 +214,7 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
             {/* Input Field */}
             <input
                 ref={inputRef}
-                className={`inset-y-0 items-center grow pr-2 pl-2 ${props.type == 'number' ? 'text-right' : 'text-left'} disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed`}
+                className={`inset-y-0 items-center grow pr-2 pl-2 ${props.type == 'number' ? 'text-right' : 'text-left'} disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed h-full`}
                 style={{ minWidth: 0, maxWidth: '100%' }}
                 type={typeof props.type !== 'undefined' ? props.type : 'text'}
                 name={typeof props.name !== 'undefined' ? props.name : ''}
@@ -219,10 +227,14 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
                 min={typeof props.min !== 'undefined' ? props.min : undefined}
                 max={typeof props.max !== 'undefined' ? props.max : undefined}
                 disabled={typeof disabled !== 'undefined' ? disabled : false}
+                readOnly={typeof props.readOnly !== 'undefined' ? props.readOnly : false}
                 onChange={(e) => {
                     setValueEdited(e.target.value)
                     if (props.onChange && !requireAccept) props.onChange(e)
                     if (props.updateValuePath && !requireAccept) updateValue(e)
+                }}
+                onPaste={(e) => {
+                    if (props.onPaste) props.onPaste(e)
                 }}
             />
 

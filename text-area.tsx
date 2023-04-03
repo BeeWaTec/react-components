@@ -20,6 +20,7 @@ interface TextAreaProps {
     updateValueParams?: any,
     updateValueKey?: string,
     requireAccept?: boolean,
+    readOnly?: boolean,
     onChange?: (value: React.ChangeEvent<HTMLTextAreaElement>) => void,
 }
 const TextArea = forwardRef(({ className, updateValueKey = 'value', updateValueMethod = 'post', disabled = false, showSpinner = false, requireAccept = false, ...props }: TextAreaProps, ref) => {
@@ -97,6 +98,12 @@ const TextArea = forwardRef(({ className, updateValueKey = 'value', updateValueM
         asyncUseEffect();
     }, [props.validationRulesPath])
 
+    // Update value when props change
+    useEffect(() => {
+        setValue(props.value)
+        setValueEdited(undefined)
+    }, [props.value])
+
     return (
         <div className={`relative flex items-stretch w-full border-2 border-solid rounded-md border-gray-300 shadow-sm focus:border-theme-primary-light focus:ring-indigo-500 sm:text-sm h-24 ${className}`}>
 
@@ -167,6 +174,7 @@ const TextArea = forwardRef(({ className, updateValueKey = 'value', updateValueM
                 value={typeof valueEdited !== 'undefined' ? valueEdited == props.hideWhenvalue ? '' : valueEdited : typeof value !== 'undefined' ? value == props.hideWhenvalue ? '' : value : ''}
                 placeholder={typeof props.placeholder !== 'undefined' ? props.placeholder : ''}
                 disabled={typeof disabled !== 'undefined' ? disabled : false}
+                readOnly={typeof props.readOnly !== 'undefined' ? props.readOnly : false}
                 onChange={(e) => {
                     setValueEdited(e.target.value)
                     if (props.onChange && !requireAccept) props.onChange(e)
