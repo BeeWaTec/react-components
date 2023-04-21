@@ -51,7 +51,7 @@ const TextArea = forwardRef(({ className, updateValueKey = 'value', updateValueM
                     'Content-Type': 'multipart/form-data'
                 }
             })
-            if (result.status === 200 && result.data.success == true) {
+            if (result.status === 200) {
 
                 // Create toast
                 toast.success('Changed saved successfully');

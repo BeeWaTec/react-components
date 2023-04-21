@@ -82,8 +82,8 @@ export default function ComboField({ className, enableResetButton = false, ...pr
                 const data = response.data
                 //console.log(props.loadValuesPath.filter)
                 //console.log(data)
-                if (typeof data.data !== 'undefined' && data.data !== null) {
-                    const newValues = data.data.map((value: any) => {
+                if (typeof data !== 'undefined' && data !== null) {
+                    const newValues = data.map((value: any) => {
                         let newValue: { value: string | number, label: string } = {
                             value: value[props.loadValuesPath?.valueKey || 'value'],
                             label: value[props.loadValuesPath?.labelKey || 'label'],
@@ -145,6 +145,20 @@ export default function ComboField({ className, enableResetButton = false, ...pr
             isMounted.current = false
         }
     }, [])
+
+    // Update values if props change
+    useEffect(() => {
+        if (props.values !== values) {
+            setValues(props.values)
+        }
+    }, [props.values])
+
+    // Update selected if props change
+    useEffect(() => {
+        if (props.selected !== selected) {
+            setSelected(props.selected)
+        }
+    }, [props.selected])
 
     // Call onChange function if selected value changes
     /*useEffect(() => {
