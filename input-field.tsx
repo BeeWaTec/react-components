@@ -1,4 +1,4 @@
-import React, { forwardRef, MutableRefObject, ReactNode, useEffect, useRef, useState } from 'react'
+import React, { forwardRef, MutableRefObject, ReactNode, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import axiosInstance from '@/helpers/base/axios'
 import { toast } from 'react-toastify'
 import Spinner from './spinner';
@@ -26,6 +26,7 @@ interface InputFieldProps {
     updateValueParams?: any,
     updateValueKey?: string,
     requireAccept?: boolean,
+    style?: React.CSSProperties,
     readOnly?: boolean,
     onChange?: (value: React.ChangeEvent<HTMLInputElement>) => void,
     onPaste?: (value: React.ClipboardEvent<HTMLInputElement>) => void,
@@ -129,7 +130,10 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
     }, [props.value])
 
     return (
-        <div className={`relative flex items-stretch w-full border-2 border-solid rounded-md border-gray-300 shadow-sm focus:border-theme-primary-light focus:ring-indigo-500 sm:text-sm h-8 ${className}`}>
+        <div
+            className={`relative flex items-stretch w-full border-2 border-solid rounded-md border-gray-300 shadow-sm focus:border-theme-primary-light focus:ring-indigo-500 sm:text-sm h-8 ${className}`}
+            style={props.style}
+        >
 
             {/* Accept and decline buttons if requireAccept is true */}
             {typeof requireAccept !== 'undefined' && requireAccept == true &&
@@ -202,7 +206,7 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
                     {props.prefix}
                 </div>
             }
-            {((typeof props.suffix == 'string' && props.suffix !== '') || (typeof props.suffix !== 'undefined' && props.suffix !== null)) &&
+            {((typeof props.prefix == 'string' && props.prefix !== '') || (typeof props.prefix !== 'undefined' && props.prefix !== null)) &&
                 <div
                     className={`inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none ${onPrefixPressed ? 'cursor-pointer' : ''}`}
                     onClick={(e) => onPrefixPressed && onPrefixPressed(e)}
@@ -270,7 +274,7 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
                     <div className="inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none">
                         <div className="w-px h-6 bg-gray-300"></div>
                     </div>
-                    <div className="inset-y-0 grow-0 flex flex-col justify-center items-center select-none">
+                    <div className="inset-y-0 grow-0 mr-2 flex flex-col justify-center items-center select-none">
                         <div className="flex flex-col justify-center items-center">
                             <button
                                 className="w-4 h-4 text-gray-500 hover:text-gray-700 focus:outline-none"
