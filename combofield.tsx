@@ -3,6 +3,7 @@ import { Combobox } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import classNames from 'classnames'
 import axios, { AxiosInstance } from 'axios'
+import { Float } from '@headlessui-float/react'
 
 interface ComboFieldProps {
     className?: string,
@@ -23,6 +24,7 @@ interface ComboFieldProps {
         labelKey?: string,
         axiosInstance?: any,
     }
+    style?: React.CSSProperties,
     prefix?: string | ReactNode,
     suffix?: string | ReactNode,
     disabled?: boolean,
@@ -30,7 +32,7 @@ interface ComboFieldProps {
     enableResetButton?: boolean,
     onChange?: (e: string | null) => void,
 }
-export default function ComboField({ className, enableResetButton = false, ...props }: ComboFieldProps): React.ReactElement {
+export default function ComboField ({ className, enableResetButton = false, ...props }: ComboFieldProps): React.ReactElement {
 
     // Create references
     let retryTimer: MutableRefObject<NodeJS.Timeout | null> = useRef(null)
@@ -61,7 +63,7 @@ export default function ComboField({ className, enableResetButton = false, ...pr
     }
 
     // Call async
-    async function loadData() {
+    async function loadData () {
         if (typeof props.loadValuesPath !== 'undefined' && props.loadValuesPath !== null && !loadingData) {
             setLoadingData(true)
             // Load values from server
@@ -175,7 +177,13 @@ export default function ComboField({ className, enableResetButton = false, ...pr
     }, [props.loadValuesPath?.filter, props.loadValuesPath?.sort, props.loadValuesPath?.limit, props.loadValuesPath?.offset])
 
     return (
-        <div className="relative flex items-stretch w-full h-full border-2 border-solid rounded-md border-gray-300 shadow-sm focus:border-theme-primary-light focus:ring-indigo-500 sm:text-sm">
+        <div
+            className={`relative flex items-stretch w-full border-2 border-solid border-gray-300 shadow-sm focus:border-theme-primary-light focus-within:border-slate-600 sm:text-sm h-8 transition-colors ${className}`}
+            style={{
+                // Inner border when input is focused
+                ...props.style
+            }}
+        >
 
             {/* Prefix */}
             {typeof props.prefix == 'string' && props.prefix !== '' &&
@@ -198,7 +206,7 @@ export default function ComboField({ className, enableResetButton = false, ...pr
             <Combobox
                 ref={comboRef}
                 as="div"
-                className={`w-full`}
+                className={`w-full h-full`}
                 disabled={props.disabled}
                 value={values?.find((value) => {
                     return value.value === selected
@@ -218,77 +226,79 @@ export default function ComboField({ className, enableResetButton = false, ...pr
                     }
                 }}
             >
-                <div className="relative cursor-not-allowed">
-                    <Combobox.Button
-                        className={`block w-full`}
-                    >
-                        <Combobox.Input
-                            className={`block w-full pl-3 pr-10 py-2 focus:border-theme-primary-light focus:ring-indigo-500 sm:text-sm ${props.disabled ? 'cursor-not-allowed' : 'cursor-pointer'} ${props.textAlignment == 'right' ? 'text-right' : props.textAlignment == 'center' ? 'text-center' : 'text-left'}`}
-                            displayValue={(value:any) => value?.label}
-                            readOnly={true}
-                            onChange={(e) => { }}
-                        />
-                    </Combobox.Button>
-                    <Combobox.Button className={`absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none ${props.disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
-                        <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                    </Combobox.Button>
+                <Combobox.Button
+                    className={`block w-full h-full`}
+                >
+                    <Combobox.Input 
+                        className={`w-full h-full cursor-pointer inset-y-0 items-center grow pr-2 pl-2 ${props.textAlignment == 'right' ? 'text-right' : props.textAlignment == 'center' ? 'text-center' : 'text-left'} border-0 focus:ring-0 focus:border-0 focus:outline-none`}
+                        displayValue={(value: any) => value?.label}
+                        readOnly={true}
+                        onChange={(e) => { }}
+                    />
+                </Combobox.Button>
+                <Combobox.Button className={`absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none ${props.disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                    <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                </Combobox.Button>
 
-                    {values && values.length > 0 && (
-                        <Combobox.Options static={showDropdown} className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                            {values.map((value) => (
-                                <Combobox.Option
-                                    key={value.value}
-                                    value={value}
-                                    className={({ active }) =>
-                                        classNames(
-                                            'relative cursor-default select-none py-2 pl-3 pr-9',
-                                            active ? 'bg-indigo-600 text-white' : 'text-gray-900'
-                                        )
-                                    }
-                                >
-                                    {({ active, selected }) => (
-                                        <>
-                                            <span className={classNames('block truncate', selected && 'font-semibold')}>{value.label}</span>
+                {values && values.length > 0 && (
+                    <Combobox.Options static={showDropdown} className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm ml-0">
+                        {values.map((value) => (
+                            <Combobox.Option
+                                key={value.value}
+                                value={value}
+                                className={({ active }) =>
+                                    classNames(
+                                        'relative cursor-default select-none py-2 pl-3 pr-9',
+                                        active ? 'bg-indigo-600 text-white' : 'text-gray-900'
+                                    )
+                                }
+                            >
+                                {({ active, selected }) => (
+                                    <>
+                                        <span className={classNames('block truncate', selected && 'font-semibold')}>{value.label}</span>
 
-                                            {selected && (
-                                                <span
-                                                    className={classNames(
-                                                        'absolute inset-y-0 right-0 flex items-center pr-4',
-                                                        active ? 'text-white' : 'text-indigo-600'
-                                                    )}
-                                                >
-                                                    <CheckIcon className="h-5 w-5" aria-hidden="true" />
-                                                </span>
-                                            )}
-                                        </>
-                                    )}
-                                </Combobox.Option>
-                            ))}
-                        </Combobox.Options>
-                    )}
-                </div>
+                                        {selected && (
+                                            <span
+                                                className={classNames(
+                                                    'absolute inset-y-0 right-0 flex items-center pr-4',
+                                                    active ? 'text-white' : 'text-indigo-600'
+                                                )}
+                                            >
+                                                <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                            </span>
+                                        )}
+                                    </>
+                                )}
+                            </Combobox.Option>
+                        ))}
+                    </Combobox.Options>
+                )}
             </Combobox>
 
 
             {/* Suffix */}
-            {((typeof props.suffix == 'string' && props.suffix !== '') || (typeof props.suffix !== 'undefined' && props.suffix !== null)) &&
+            {
+                ((typeof props.suffix == 'string' && props.suffix !== '') || (typeof props.suffix !== 'undefined' && props.suffix !== null)) &&
                 <div className="inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none">
                     <div className="w-px h-6 bg-gray-300"></div>
                 </div>
             }
-            {typeof props.suffix == 'string' && props.suffix !== '' &&
+            {
+                typeof props.suffix == 'string' && props.suffix !== '' &&
                 <div className="inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none">
                     <span className="text-gray-500">{props.suffix}</span>
                 </div>
             }
-            {typeof props.suffix !== 'string' && typeof props.suffix !== 'undefined' && props.suffix !== null &&
+            {
+                typeof props.suffix !== 'string' && typeof props.suffix !== 'undefined' && props.suffix !== null &&
                 <div className="inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none">
                     {props.suffix}
                 </div>
             }
 
             {/* Show reset button if requested */}
-            {typeof enableResetButton !== 'undefined' && enableResetButton &&
+            {
+                typeof enableResetButton !== 'undefined' && enableResetButton &&
                 <>
                     <div className="inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none">
                         <div className="w-px h-6 bg-gray-300"></div>
@@ -314,6 +324,6 @@ export default function ComboField({ className, enableResetButton = false, ...pr
                     </div>
                 </>
             }
-        </div>
+        </div >
     )
 }

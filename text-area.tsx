@@ -21,6 +21,7 @@ interface TextAreaProps {
     updateValueKey?: string,
     requireAccept?: boolean,
     readOnly?: boolean,
+    style?: React.CSSProperties,
     onChange?: (value: React.ChangeEvent<HTMLTextAreaElement>) => void,
 }
 const TextArea = forwardRef(({ className, updateValueKey = 'value', updateValueMethod = 'post', disabled = false, showSpinner = false, requireAccept = false, ...props }: TextAreaProps, ref) => {
@@ -105,7 +106,13 @@ const TextArea = forwardRef(({ className, updateValueKey = 'value', updateValueM
     }, [props.value])
 
     return (
-        <div className={`relative flex items-stretch w-full border-2 border-solid rounded-md border-gray-300 shadow-sm focus:border-theme-primary-light focus:ring-indigo-500 sm:text-sm h-24 ${className}`}>
+        <div
+            className={`relative flex items-stretch w-full border-2 border-solid border-gray-300 shadow-sm focus:border-theme-primary-light focus-within:border-slate-600 sm:text-sm h-24 transition-colors ${className}`}
+            style={{
+                // Inner border when input is focused
+                ...props.style
+            }}
+        >
 
             {/* Accept and decline buttons if requireAccept is true */}
             {typeof requireAccept !== 'undefined' && requireAccept == true &&
@@ -167,7 +174,7 @@ const TextArea = forwardRef(({ className, updateValueKey = 'value', updateValueM
             {/* Input Field */}
             <textarea
                 ref={inputRef}
-                className={`inset-y-0 items-center grow shrink-0 pr-2 pl-2 text-left disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed h-full resize-none`}
+                className={`inset-y-0 items-center grow pr-2 pl-2 border-0 focus:ring-0 focus:border-0 focus:outline-none`}
                 name={typeof props.name !== 'undefined' ? props.name : ''}
                 id={props.id}
                 required={typeof props.required !== 'undefined' ? props.required : false}

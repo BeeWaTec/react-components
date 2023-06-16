@@ -2,6 +2,7 @@ import React, { forwardRef, MutableRefObject, ReactNode, useEffect, useImperativ
 import axiosInstance from '@/helpers/base/axios'
 import { toast } from 'react-toastify'
 import Spinner from './spinner';
+import classNames from 'classnames';
 
 interface InputFieldProps {
     className?: string,
@@ -47,7 +48,7 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
     const [ongoingSubmit, setOngoingSubmit] = useState<boolean>(false)
 
     // Create handlers
-    async function updateValue(e: React.ChangeEvent<HTMLInputElement>) {
+    async function updateValue (e: React.ChangeEvent<HTMLInputElement>) {
         e.preventDefault();
         if (ongoingSubmit) return;
         try {
@@ -88,7 +89,7 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
     // Load validation rules from server
     useEffect(() => {
         // Call async
-        async function asyncUseEffect() {
+        async function asyncUseEffect () {
             if (typeof props.validationRulesPath !== 'undefined' && props.validationRulesPath !== null) {
                 const response = await axiosInstance.get(props.validationRulesPath).catch((error) => {
                     if (error.response && error.response.status !== 404) {
@@ -131,8 +132,11 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
 
     return (
         <div
-            className={`relative flex items-stretch w-full border-2 border-solid rounded-md border-gray-300 shadow-sm focus:border-theme-primary-light focus:ring-indigo-500 sm:text-sm h-8 ${className}`}
-            style={props.style}
+            className={`relative flex items-stretch w-full border-2 border-solid border-gray-300 shadow-sm focus:border-theme-primary-light focus-within:border-slate-600 sm:text-sm h-8 transition-colors ${className}`}
+            style={{
+                // Inner border when input is focused
+                ...props.style
+            }}
         >
 
             {/* Accept and decline buttons if requireAccept is true */}
@@ -192,7 +196,7 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
             {/* Prefix */}
             {typeof props.prefix == 'string' && props.prefix !== '' &&
                 <div
-                    className={`inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none ${onPrefixPressed ? 'cursor-pointer' : ''}`}
+                    className={`mx-2 inset-y-0 grow-0 flex flex-col justify-center items-center select-none ${onPrefixPressed ? 'cursor-pointer' : ''}`}
                     onClick={(e) => onPrefixPressed && onPrefixPressed(e)}
                 >
                     <span className="text-gray-500">{props.prefix}</span>
@@ -200,7 +204,7 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
             }
             {typeof props.prefix !== 'string' && typeof props.prefix !== 'undefined' && props.prefix !== null &&
                 <div
-                    className={`inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none ${onPrefixPressed ? 'cursor-pointer' : ''}`}
+                    className={`inset-y-0 grow-0 flex flex-row justify-center items-center select-none ${onPrefixPressed ? 'cursor-pointer' : ''}`}
                     onClick={(e) => onPrefixPressed && onPrefixPressed(e)}
                 >
                     {props.prefix}
@@ -208,17 +212,20 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
             }
             {((typeof props.prefix == 'string' && props.prefix !== '') || (typeof props.prefix !== 'undefined' && props.prefix !== null)) &&
                 <div
-                    className={`inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none ${onPrefixPressed ? 'cursor-pointer' : ''}`}
+                    className={`inset-y-0 grow-0 flex flex-row justify-center items-stretch select-none ${onPrefixPressed ? 'cursor-pointer' : ''}`}
                     onClick={(e) => onPrefixPressed && onPrefixPressed(e)}
                 >
-                    <div className="w-px h-6 bg-gray-300"></div>
+                    <div className="w-px bg-gray-300"></div>
                 </div>
             }
 
             {/* Input Field */}
             <input
                 ref={inputRef}
-                className={`inset-y-0 items-center grow pr-2 pl-2 ${props.type == 'number' ? 'text-right' : 'text-left'} disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed h-full`}
+                className={classNames(
+                    `inset-y-0 items-center grow pr-2 pl-2 ${props.type == 'number' ? 'text-right' : 'text-left'} border-0 focus:ring-0 focus:border-0 focus:outline-none`,
+                    "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
+                )}
                 style={{ minWidth: 0, maxWidth: '100%' }}
                 type={typeof props.type !== 'undefined' ? props.type : 'text'}
                 name={typeof props.name !== 'undefined' ? props.name : ''}
@@ -245,10 +252,10 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
             {/* Suffix */}
             {((typeof props.suffix == 'string' && props.suffix !== '') || (typeof props.suffix !== 'undefined' && props.suffix !== null)) &&
                 <div
-                    className={`inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none ${onSuffixPressed ? 'cursor-pointer' : ''}`}
+                    className={`inset-y-0 mr-2 grow-0 flex justify-center items-stretch select-none ${onSuffixPressed ? 'cursor-pointer' : ''}`}
                     onClick={(e) => onSuffixPressed && onSuffixPressed(e)}
                 >
-                    <div className="w-px h-6 bg-gray-300"></div>
+                    <div className="w-px bg-gray-300"></div>
                 </div>
             }
             {typeof props.suffix == 'string' && props.suffix !== '' &&
@@ -272,7 +279,7 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
             {typeof props.type !== 'undefined' && props.type == 'number' &&
                 <>
                     <div className="inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none">
-                        <div className="w-px h-6 bg-gray-300"></div>
+                        <div className="w-px h-full bg-gray-300"></div>
                     </div>
                     <div className="inset-y-0 grow-0 mr-2 flex flex-col justify-center items-center select-none">
                         <div className="flex flex-col justify-center items-center">
