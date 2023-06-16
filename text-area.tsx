@@ -176,6 +176,9 @@ const TextArea = forwardRef(({ className, updateValueKey = 'value', updateValueM
                 ref={inputRef}
                 className={`inset-y-0 items-center grow pr-2 pl-2 border-0 focus:ring-0 focus:border-0 focus:outline-none`}
                 name={typeof props.name !== 'undefined' ? props.name : ''}
+                style={{
+                    minHeight: '100%',
+                }}
                 id={props.id}
                 required={typeof props.required !== 'undefined' ? props.required : false}
                 value={typeof valueEdited !== 'undefined' ? valueEdited == props.hideWhenvalue ? '' : valueEdited : typeof value !== 'undefined' ? value == props.hideWhenvalue ? '' : value : ''}
