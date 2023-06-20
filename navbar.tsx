@@ -1,6 +1,5 @@
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { UserIcon } from '@heroicons/react/24/solid'
-import { MenuIcon, XIcon } from '@heroicons/react/outline'
 import classNames from 'classnames'
 import Image from "next/legacy/image"
 import Link from 'next/link'
@@ -44,6 +43,21 @@ interface DefaultNavbarType {
     }[],
 }
 function DefaultNavbar ({ navigationLinks = [], logo, logoText, user, showUser = false, userIsLoading, elementsBeforeUser = [], elementsAfterUser = [], lang, languages }: DefaultNavbarType) {
+
+    function startLogin() {
+        if (Capacitor.isNativePlatform()) {
+            console.log('Opening in native browser')
+            Browser.open({ 
+                url: `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login` ,
+                presentationStyle: 'popover',
+                windowName: '_blank',
+                width: 800,
+            })
+        } else {
+            console.log('Opening in web browser')
+            window.location.href = '/api/auth/login'
+        }
+    }
 
     return (
         <div
