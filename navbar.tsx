@@ -9,6 +9,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars, faTimes } from '@fortawesome/pro-solid-svg-icons'
 import { StaticImageData } from 'next/image'
 import setLanguage from 'next-translate/setLanguage'
+import { Capacitor } from '@capacitor/core'
+import { Browser } from '@capacitor/browser'
 
 interface DefaultNavbarType {
     logo?: string | StaticImageData,
