@@ -8,10 +8,12 @@ import { Fragment } from 'react'
 import Spinner from './spinner'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars, faTimes } from '@fortawesome/pro-solid-svg-icons'
+import { StaticImageData } from 'next/image'
+import setLanguage from 'next-translate/setLanguage'
 
 interface DefaultNavbarType {
-    logo?: string | JSX.Element,
-    logoText?: string | JSX.Element,
+    logo?: string | StaticImageData,
+    logoText?: string | StaticImageData,
     navigationLinks?: [
         {
             name: string,
@@ -35,8 +37,13 @@ interface DefaultNavbarType {
     },
     showUser?: boolean,
     userIsLoading?: boolean,
+    lang?: string,
+    languages?: {
+        name: string,
+        locale: string,
+    }[],
 }
-function DefaultNavbar ({ navigationLinks = [], logo, logoText, user, showUser = false, userIsLoading, elementsBeforeUser = [], elementsAfterUser = [] }: DefaultNavbarType) {
+function DefaultNavbar ({ navigationLinks = [], logo, logoText, user, showUser = false, userIsLoading, elementsBeforeUser = [], elementsAfterUser = [], lang, languages }: DefaultNavbarType) {
 
     return (
         <div
@@ -67,27 +74,28 @@ function DefaultNavbar ({ navigationLinks = [], logo, logoText, user, showUser =
                                     >
                                         {logo &&
                                             <>
-                                                {typeof logo === 'string' ?
-                                                    <Image
-                                                        src={logo}
-                                                        alt={'Logo'}
-                                                        objectFit='contain'
-                                                        width={32}
-                                                        height={32}
-                                                    />
-                                                    :
-                                                    logo
-                                                }
-
+                                                <Image
+                                                    src={logo}
+                                                    alt="PurePortal - Logo"
+                                                    width={32}
+                                                    height={32}
+                                                    className='object-contain'
+                                                />
                                             </>
                                         }
                                         {logoText &&
                                             <>
-                                                {typeof logoText === 'string' ?
-                                                    <span className="hidden md:block ml-2 text-gray-700 font-bold text-xl">{logoText}</span>
-                                                    :
-                                                    logoText
-                                                }
+                                                <div
+                                                    className={`ml-5`}
+                                                >
+                                                    <Image
+                                                        src={logoText}
+                                                        alt="PurePortal - Text"
+                                                        width={200}
+                                                        height={32}
+                                                        className='object-contain'
+                                                    />
+                                                </div>
                                             </>
                                         }
                                     </Link>
@@ -194,6 +202,66 @@ function DefaultNavbar ({ navigationLinks = [], logo, logoText, user, showUser =
                                             ))
                                         }
                                     </>
+
+                                    {/* Language selector */}
+                                    {languages && languages.length > 0 &&
+                                        <div className="ml-6 flex items-center">
+                                            <Menu as="div" className="relative inline-block text-left">
+                                                <div>
+                                                    <Menu.Button className="flex items-center bg-gray-100 text-gray-400 hover:text-gray-60">
+                                                        <span className="sr-only">Open options</span>
+                                                        <Image
+                                                            src={`/media/flags/${lang}.webp`}
+                                                            alt={languages.find(language => language.locale == lang).name}
+                                                            width={30}
+                                                            height={30}
+                                                            className='object-contain'
+                                                        />
+                                                    </Menu.Button>
+                                                </div>
+
+                                                <Transition
+                                                    as={Fragment}
+                                                    enter="transition ease-out duration-100"
+                                                    enterFrom="transform opacity-0 scale-95"
+                                                    enterTo="transform opacity-100 scale-100"
+                                                    leave="transition ease-in duration-75"
+                                                    leaveFrom="transform opacity-100 scale-100"
+                                                    leaveTo="transform opacity-0 scale-95"
+                                                >
+                                                    <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg cursor-pointer">
+                                                        <div className="py-1">
+                                                            {languages.map((language, index) => (
+                                                                <Menu.Item
+                                                                    key={index}
+                                                                >
+                                                                    {({ active }) => (
+                                                                        <a
+                                                                            className={classNames(
+                                                                                lang == language.locale ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                                                                                'block px-4 py-2 text-sm',
+                                                                                'flex items-center'
+                                                                            )}
+                                                                            onClick={async () => await setLanguage(language.locale)}
+                                                                        >
+                                                                            <Image
+                                                                                src={`/media/flags/${language.locale}.webp`}
+                                                                                alt={language.locale}
+                                                                                width={30}
+                                                                                height={30}
+                                                                                className='object-contain'
+                                                                            />
+                                                                            <span className="ml-2">{language.name}</span>
+                                                                        </a>
+                                                                    )}
+                                                                </Menu.Item>
+                                                            ))}
+                                                        </div>
+                                                    </Menu.Items>
+                                                </Transition>
+                                            </Menu>
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         </div>
