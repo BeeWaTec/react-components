@@ -29,7 +29,10 @@ interface InputFieldProps {
     requireAccept?: boolean,
     style?: React.CSSProperties,
     readOnly?: boolean,
-    onChange?: (value: React.ChangeEvent<HTMLInputElement>) => void,
+    checked?: boolean,
+    onFocusSelectAll?: boolean,
+    onChange?: (value: React.ChangeEvent<HTMLInputElement>) => Promise<boolean> | boolean | void,
+    onBlur?: (value: React.FocusEvent<HTMLInputElement>) => void,
     onPaste?: (value: React.ClipboardEvent<HTMLInputElement>) => void,
     onDeclinePressed?: () => void,
     onAcceptPressed?: () => void,
@@ -37,7 +40,9 @@ interface InputFieldProps {
     onPrefixPressed?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void,
     keepDeclineButtonActive?: boolean,
 }
-const InputField = forwardRef(({ className, keepDeclineButtonActive = true, updateValueKey = 'value', updateValueMethod = 'post', disabled = false, showSpinner = false, requireAccept = false, onDeclinePressed, onAcceptPressed, onSuffixPressed, onPrefixPressed, ...props }: InputFieldProps, ref) => {
+const InputField = forwardRef(({ className, keepDeclineButtonActive = true, updateValueKey = 'value', updateValueMethod = 'post', disabled = false, showSpinner = false, requireAccept = false, onFocusSelectAll = false, onDeclinePressed, onAcceptPressed, onSuffixPressed, onPrefixPressed, ...props }: InputFieldProps, ref) => {
+
+    let timerSelectAll: any = null
 
     // Reference to input field
     const inputRef = useRef() as MutableRefObject<HTMLInputElement>
@@ -132,7 +137,14 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
 
     return (
         <div
-            className={`relative flex items-stretch w-full border-2 border-solid border-gray-300 shadow-sm focus:border-theme-primary-light focus-within:border-slate-600 sm:text-sm h-8 transition-colors ${className}`}
+            className={classNames(
+                ` transition-colors`,
+                {
+                    'relative border-2 border-solid border-gray-300 shadow-sm focus:border-theme-primary-light focus-within:border-slate-600 sm:text-sm h-8 flex items-stretch w-full': props.type !== 'checkbox',
+                    'block w-5 h-5': props.type === 'checkbox',
+                },
+                className,
+            )}
             style={{
                 // Inner border when input is focused
                 ...props.style
@@ -154,7 +166,7 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
                                 <button
                                     className={`w-6 h-6 text-gray-500 hover:text-gray-700 focus:outline-none disabled:opacity-50`}
                                     disabled={typeof disabled !== 'undefined' && disabled == true ? true : typeof valueEdited === "undefined" ? true : false}
-                                    onClick={(e) => {
+                                    onClick={async (e) => {
                                         e.preventDefault()
                                         e.stopPropagation()
                                         let dataAsChangeEvent = {
@@ -162,7 +174,12 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
                                                 value: valueEdited
                                             }
                                         } as React.ChangeEvent<HTMLInputElement>
-                                        if (props.onChange) props.onChange(dataAsChangeEvent)
+                                        if (props.onChange){
+                                            const stop = await props.onChange(dataAsChangeEvent)
+                                            if (stop === false){
+                                                return;
+                                            }
+                                        }
                                         if (props.updateValuePath) updateValue(dataAsChangeEvent)
                                         setValue(valueEdited)
                                         setValueEdited(undefined)
@@ -223,8 +240,13 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
             <input
                 ref={inputRef}
                 className={classNames(
-                    `inset-y-0 items-center grow pr-2 pl-2 ${props.type == 'number' ? 'text-right' : 'text-left'} border-0 focus:ring-0 focus:border-0 focus:outline-none`,
-                    "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
+                    `inset-y-0 items-center grow pr-2 pl-2 border-0 focus:ring-0 focus:border-0 focus:outline-none`,
+                    {
+                        '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none': props.type != 'checkbox',
+                        'text-right': props.type == 'number',
+                        'text-left': props.type != 'number',
+                        'h-full w-full': props.type == 'checkbox',
+                    }
                 )}
                 style={{ minWidth: 0, maxWidth: '100%' }}
                 type={typeof props.type !== 'undefined' ? props.type : 'text'}
@@ -239,6 +261,19 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
                 max={typeof props.max !== 'undefined' ? props.max : undefined}
                 disabled={typeof disabled !== 'undefined' ? disabled : false}
                 readOnly={typeof props.readOnly !== 'undefined' ? props.readOnly : false}
+                checked={typeof props.checked !== 'undefined' ? props.checked : false}
+                onFocus={(e) => {
+                    clearTimeout(timerSelectAll)
+                    if (onFocusSelectAll){
+                        timerSelectAll = setTimeout(() => {
+                            e.target.select()
+                        }, 100)
+                    }
+                }}
+                onBlur={(e) => {
+                    clearTimeout(timerSelectAll)
+                    if (props.onBlur) props.onBlur(e)
+                }}
                 onChange={(e) => {
                     setValueEdited(e.target.value)
                     if (props.onChange && !requireAccept) props.onChange(e)
