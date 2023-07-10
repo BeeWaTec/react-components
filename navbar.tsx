@@ -50,7 +50,7 @@ function DefaultNavbar ({ navigationLinks = [], logo, logoText, user, showUser =
         if (Capacitor.isNativePlatform()) {
             console.log('Opening in native browser')
             Browser.open({ 
-                url: `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login` ,
+                url: `${process.env.NEXT_PUBLIC_API_URL}/auth/login` ,
                 presentationStyle: 'popover',
                 windowName: '_blank',
                 width: 800,
