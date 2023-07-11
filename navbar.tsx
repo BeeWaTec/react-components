@@ -13,7 +13,7 @@ import { Capacitor } from '@capacitor/core'
 import { Browser } from '@capacitor/browser'
 
 interface DefaultNavbarType {
-    logo?: string | StaticImageData,
+    logo?: StaticImageData,
     logoText?: string | StaticImageData,
     navigationLinks?: [
         {
@@ -92,25 +92,34 @@ function DefaultNavbar ({ navigationLinks = [], logo, logoText, user, showUser =
                                             <>
                                                 <Image
                                                     src={logo}
-                                                    alt="PurePortal - Logo"
+                                                    alt="Logo"
                                                     width={32}
                                                     height={32}
                                                     className='object-contain'
                                                 />
                                             </>
                                         }
-                                        {logoText &&
+                                        {logoText && typeof logoText !== 'string' &&
                                             <>
                                                 <div
                                                     className={`ml-5`}
                                                 >
                                                     <Image
                                                         src={logoText}
-                                                        alt="PurePortal - Text"
+                                                        alt="Logo"
                                                         width={200}
                                                         height={32}
                                                         className='object-contain'
                                                     />
+                                                </div>
+                                            </>
+                                        }
+                                        {logoText && typeof logoText === 'string' &&
+                                            <>
+                                                <div
+                                                    className={`ml-5 text-xl font-bold text-gray-900 dark:text-white`}
+                                                >
+                                                    {logoText}
                                                 </div>
                                             </>
                                         }
