@@ -15,12 +15,10 @@ import { Browser } from '@capacitor/browser'
 interface DefaultNavbarType {
     logo?: StaticImageData,
     logoText?: string | StaticImageData,
-    navigationLinks?: [
-        {
-            name: string,
-            link: string,
-        }?
-    ],
+    navigationLinks?: {
+        name: string,
+        link: string,
+    }[],
     elementsBeforeUser?: Array<JSX.Element>,
     elementsAfterUser?: Array<JSX.Element>,
     user?: {
@@ -46,7 +44,7 @@ interface DefaultNavbarType {
 }
 function DefaultNavbar ({ navigationLinks = [], logo, logoText, user, showUser = false, userIsLoading, elementsBeforeUser = [], elementsAfterUser = [], lang, languages }: DefaultNavbarType) {
 
-    function startLogin() {
+    function startLogin () {
         if (Capacitor.isNativePlatform()) {
             console.log('Opening in native browser')
             Browser.open({ 
