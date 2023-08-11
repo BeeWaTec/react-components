@@ -326,6 +326,16 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
                                     if (typeof inputRef.current !== 'undefined' && inputRef.current !== null) {
                                         inputRef.current.stepUp()
                                         inputRef.current.dispatchEvent(new Event('change', { bubbles: true }))
+                                        if(props.onBlur){
+                                            // Generate fake event
+                                            const fakeEvent = {
+                                                target: {
+                                                    value: inputRef.current.value.toString(),
+                                                    valueAsNumber: inputRef.current.valueAsNumber
+                                                }
+                                            } as React.FocusEvent<HTMLInputElement>
+                                            props.onBlur(fakeEvent)
+                                        }
                                     }
                                 }}
                             >
@@ -341,6 +351,16 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
                                     if (typeof inputRef.current !== 'undefined' && inputRef.current !== null) {
                                         inputRef.current.stepDown()
                                         inputRef.current.dispatchEvent(new Event('change', { bubbles: true }))
+                                        if(props.onBlur){
+                                            // Generate fake event
+                                            const fakeEvent = {
+                                                target: {
+                                                    value: inputRef.current.value.toString(),
+                                                    valueAsNumber: inputRef.current.valueAsNumber
+                                                }
+                                            } as React.FocusEvent<HTMLInputElement>
+                                            props.onBlur(fakeEvent)
+                                        }
                                     }
                                 }}
                             >
