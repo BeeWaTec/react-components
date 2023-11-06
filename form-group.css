@@ -1,0 +1,13 @@
+.form-group input, .form-group textarea, .form-group select {
+    border: none;
+    height: unset;
+    width: unset;
+    flex-grow: 1;
+}
+
+.form-group .input-field, .form-group .combo-field {
+    border: none;
+    height: unset;
+    width: unset;
+    flex-grow: 1;
+}

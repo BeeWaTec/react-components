@@ -4,9 +4,7 @@ import { toast } from 'react-toastify'
 import Spinner from './spinner';
 import classNames from 'classnames';
 
-interface InputFieldProps {
-    className?: string,
-    type?: string,
+interface InputFieldProps extends React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {
     name?: string,
     id?: string,
     value?: string | number,
@@ -17,7 +15,6 @@ interface InputFieldProps {
     min?: string | number,
     max?: string | number,
     hideWhenvalue?: string | number,
-    prefix?: string | ReactNode,
     suffix?: string | ReactNode,
     disabled?: boolean,
     validationRulesPath?: string,
@@ -40,7 +37,9 @@ interface InputFieldProps {
     onPrefixPressed?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void,
     keepDeclineButtonActive?: boolean,
 }
-const InputField = forwardRef(({ className, keepDeclineButtonActive = true, updateValueKey = 'value', updateValueMethod = 'post', disabled = false, showSpinner = false, requireAccept = false, onFocusSelectAll = false, onDeclinePressed, onAcceptPressed, onSuffixPressed, onPrefixPressed, ...props }: InputFieldProps, ref) => {
+const InputField = forwardRef((props: InputFieldProps, ref) => {
+
+    const { className, keepDeclineButtonActive = true, updateValueKey = 'value', updateValueMethod = 'post', disabled = false, showSpinner = false, requireAccept = false, onFocusSelectAll = false, onDeclinePressed, onAcceptPressed, onSuffixPressed, onPrefixPressed, ...rest } = props
 
     let timerSelectAll: any = null
 
@@ -138,7 +137,7 @@ const InputField = forwardRef(({ className, keepDeclineButtonActive = true, upda
     return (
         <div
             className={classNames(
-                ` transition-colors`,
+                `input-field transition-colors`,
                 {
                     'relative border-2 border-solid border-gray-300 shadow-sm focus:border-theme-primary-light focus-within:border-slate-600 sm:text-sm h-8 flex items-stretch w-full': props.type !== 'checkbox',
                     'block w-5 h-5': props.type === 'checkbox',

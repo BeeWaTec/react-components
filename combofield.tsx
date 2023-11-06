@@ -158,7 +158,7 @@ export default function ComboField ({ className, enableResetButton = false, ...p
     // Update selected if props change
     useEffect(() => {
         if (props.selected !== selected) {
-            setSelected(props.selected)
+            setSelected(props.selected ?? null)
         }
     }, [props.selected])
 
@@ -178,7 +178,7 @@ export default function ComboField ({ className, enableResetButton = false, ...p
 
     return (
         <div
-            className={`relative flex items-stretch w-full border-2 border-solid border-gray-300 shadow-sm focus:border-theme-primary-light focus-within:border-slate-600 sm:text-sm h-8 transition-colors ${className}`}
+            className={`combofield combo-field relative flex items-stretch w-full border-2 border-solid border-gray-300 shadow-sm focus:border-theme-primary-light focus-within:border-slate-600 sm:text-sm h-8 transition-colors ${className}`}
             style={{
                 // Inner border when input is focused
                 ...props.style
@@ -230,7 +230,7 @@ export default function ComboField ({ className, enableResetButton = false, ...p
                     className={`block w-full h-full`}
                 >
                     <Combobox.Input 
-                        className={`w-full h-full cursor-pointer inset-y-0 items-center grow pr-2 pl-2 ${props.textAlignment == 'right' ? 'text-right' : props.textAlignment == 'center' ? 'text-center' : 'text-left'} border-0 focus:ring-0 focus:border-0 focus:outline-none`}
+                        className={`w-full h-full cursor-pointer inset-y-0 items-center grow pr-2 pl-2 ${props.textAlignment === 'right' ? 'text-right' : props.textAlignment === 'center' ? 'text-center' : 'text-left'} border-0 focus:ring-0 focus:border-0 focus:outline-none`}
                         displayValue={(value: any) => value?.label}
                         readOnly={true}
                         onChange={(e) => { }}
