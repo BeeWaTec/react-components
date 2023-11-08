@@ -48,4 +48,6 @@ const FormGroupRow: React.FC<FormGroupRowProps> = React.forwardRef<HTMLDivElemen
     );
 });
 
+FormGroupRow.displayName = 'FormGroupRow';
+
 export default FormGroupRow;
