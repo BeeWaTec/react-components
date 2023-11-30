@@ -139,7 +139,7 @@ const InputField = forwardRef((props: InputFieldProps, ref) => {
             className={classNames(
                 `input-field transition-colors`,
                 {
-                    'relative border-2 border-solid border-gray-300 shadow-sm focus:border-theme-primary-light focus-within:border-slate-600 sm:text-sm h-8 flex items-stretch w-full': props.type !== 'checkbox',
+                    'relative border-2 border-solid border-gray-300 shadow-sm focus:border-theme-primary-light focus-within:border-slate-600 text-sm h-8 flex items-stretch w-full': props.type !== 'checkbox',
                     'block w-5 h-5': props.type === 'checkbox',
                 },
                 className,
@@ -151,7 +151,7 @@ const InputField = forwardRef((props: InputFieldProps, ref) => {
         >
 
             {/* Accept and decline buttons if requireAccept is true */}
-            {typeof requireAccept !== 'undefined' && requireAccept == true &&
+            {typeof requireAccept !== 'undefined' && requireAccept === true &&
                 <>
                     <div className={`inset-y-0 ml-2 mr-2 grow-0 flex flex-row justify-center items-center select-none w-12`}>
                         {ongoingSubmit || showSpinner ? (

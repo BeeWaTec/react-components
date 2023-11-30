@@ -4,7 +4,13 @@ import classNames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignature } from "@fortawesome/pro-regular-svg-icons";
 import { fabric } from 'fabric';
-import { faDownload, faEmptySet, faPen, faTrash } from "@fortawesome/pro-solid-svg-icons";
+import { faDownload, faEmptySet, faPen, faTrash, faArrowsToDot, faUpload } from "@fortawesome/pro-solid-svg-icons";
+import FlipIcon from '@mui/icons-material/Flip';
+import Arrow from "./assets/canvas/Arrow.png";
+import Check from "./assets/canvas/Check.png";
+import Deny from "./assets/canvas/Deny.png";
+import QuestionMark from "./assets/canvas/QuestionMark.png";
+import ExclamationMark from "./assets/canvas/ExclamationMark.png";
 
 /*
     Canvas to "draw" on
@@ -26,6 +32,8 @@ import { faDownload, faEmptySet, faPen, faTrash } from "@fortawesome/pro-solid-s
 */
 interface CanvasProps extends React.HTMLAttributes<HTMLDivElement> {
     canvasRef?: React.Ref<HTMLDivElement>
+    value?: string
+    onCanvasChange?: (json: string) => void
 }
 const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, ref) {
 
@@ -39,6 +47,7 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
 
         let canvas = new fabric.Canvas('canvas', {
             backgroundColor: 'white',
+            selection: true,
         })
 
         window.addEventListener('resize', resizeCanvas, false);
@@ -53,20 +62,31 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
 
         var brush = canvas.freeDrawingBrush;
         brush.color = "#000000"
-        brush.width = 20;
+        brush.width = 5;
+
+        // Set value timer based to prevent ctx error
+        let timer: NodeJS.Timeout;
+        let value = props.value;
+        if (value) {
+            timer = setTimeout(() => {
+                canvas.loadFromJSON(value, () => {
+                    canvas.renderAll();
+                });
+            }, 0);
+        }
 
         setCanvas(canvas);
 
         return () => {
             if (canvas) canvas.dispose();
             window.removeEventListener('resize', resizeCanvas, false);
+            clearTimeout(timer);
         };
     }, []);
 
     useEffect(() => {
         if (canvas) {
             canvas.isDrawingMode = drawingMode;
-
             console.log(canvas.isDrawingMode);
         }
     }, [canvas, drawingMode]);
@@ -77,9 +97,13 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
             // Keypress event listener
             window.addEventListener('keydown', (e) => {
                 if (e.key === "Delete") {
-                    let activeObject = canvas.getActiveObject();
+                    let activeObject = canvas.getActiveObjects();
                     if (activeObject) {
-                        canvas.remove(activeObject);
+                        activeObject.forEach((obj) => {
+                            canvas!.remove(obj);
+                        });
+                        // Deselct all objects
+                        canvas!.discardActiveObject();
                     }
                 }
             });
@@ -101,15 +125,17 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
                         let dataURL = e.target!.result;
                         console.log(dataURL);
                         fabric.Image.fromURL(dataURL as string, (img) => {
-
                             img.set({
-                                left: 0,
-                                top: 0,
+                                // Center image
+                                left: canvas!.getWidth() / 2,
+                                top: canvas!.getHeight() / 2,
                                 originX: 'center',
                                 originY: 'center',
                             });
 
                             objectToCanvasSize(img, 'contain');
+
+                            canvas!.add(img);
                         });
                     }
                     reader.readAsDataURL(file);
@@ -141,6 +167,24 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
             });
         }
     }, [canvas]);
+
+    /* Update JSON */
+    useEffect(() => {
+        if (canvas) {
+            canvas.on('object:modified', (e) => {
+                let json = JSON.stringify(canvas!.toJSON());
+                if (props.onCanvasChange) props.onCanvasChange(json);
+            });
+            canvas.on('object:added', (e) => {
+                let json = JSON.stringify(canvas!.toJSON());
+                if (props.onCanvasChange) props.onCanvasChange(json);
+            });
+            canvas.on('object:removed', (e) => {
+                let json = JSON.stringify(canvas!.toJSON());
+                if (props.onCanvasChange) props.onCanvasChange(json);
+            });
+        }
+    }, [canvas, props.onCanvasChange]);
 
     function deleteSelected () {
         // Get active group
@@ -198,21 +242,102 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
         }
     }
 
-    function objectToCanvasSize (object: fabric.Object, objectFit: 'contain' | 'cover' | 'fill') {
+    function addAsset (asset: string) {
+        fabric.Image.fromURL(asset, (img) => {
+            img.set({
+                // Center image
+                left: canvas!.getWidth() / 2,
+                top: canvas!.getHeight() / 2,
+                originX: 'center',
+                originY: 'center',
+            });
+
+            objectToCanvasSize(img, 'contain', 0.5);
+
+            canvas!.add(img);
+        });
+    }
+
+    function centerSelected () {
+        let activeObject = canvas!.getActiveObject();
+        if (activeObject) {
+            activeObject.center();
+            canvas!.renderAll();
+        }
+    }
+
+    function objectToCanvasSize (object: fabric.Object, objectFit: 'contain' | 'cover' | 'fill', scale: number = 1) {
         let boundingRect = object.getBoundingRect();
         let canvasWidth = canvas!.getWidth();
         let canvasHeight = canvas!.getHeight();
         let scaleX = canvasWidth / boundingRect.width;
         let scaleY = canvasHeight / boundingRect.height;
-        let scale = 1;
+        let canvasScale = 1;
         if (objectFit === 'contain') {
-            scale = Math.min(scaleX, scaleY);
+            canvasScale = Math.min(scaleX, scaleY);
         } else if (objectFit === 'cover') {
-            scale = Math.max(scaleX, scaleY);
+            canvasScale = Math.max(scaleX, scaleY);
         } else if (objectFit === 'fill') {
-            scale = Math.max(scaleX, scaleY);
+            canvasScale = Math.max(scaleX, scaleY);
         }
+        // Apply scale
+        scale = canvasScale * scale;
         object.scale(scale);
+    }
+
+    function flipVertical () {
+        let activeObject = canvas!.getActiveObject();
+        if (activeObject) {
+            activeObject.set({
+                flipY: !activeObject.flipY,
+            });
+            canvas!.renderAll();
+        }
+    }
+
+    function flipHorizontal () {
+        let activeObject = canvas!.getActiveObject();
+        if (activeObject) {
+            activeObject.set({
+                flipX: !activeObject.flipX,
+            });
+            canvas!.renderAll();
+        }
+    }
+
+    function switchPencilWidth (width: number) {
+        let brush = canvas!.freeDrawingBrush;
+        brush.width = width;
+    }
+
+    function switchPencilColor (color: string) {
+        let brush = canvas!.freeDrawingBrush;
+        brush.color = color;
+    }
+
+    function uploadImage(){
+        const input = document.createElement('input');
+        input.setAttribute('type', 'file');
+        input.setAttribute('accept', 'image/*');
+        input.click();
+        input.onchange = function() {
+            const file = input.files![0];
+            const reader = new FileReader();
+            reader.onload = function() {
+                const img = new Image();
+                img.src = reader.result as string;
+                img.onload = function() {
+                    const imgInstance = new fabric.Image(img, {
+                        left: canvas!.getWidth() / 2,
+                        top: canvas!.getHeight() / 2,
+                        originX: 'center',
+                        originY: 'center',
+                    });
+                    canvas!.add(imgInstance);
+                }
+            }
+            reader.readAsDataURL(file);
+        }
     }
 
     return <>
@@ -225,11 +350,11 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
         >
             {/* Toolbar */}
             <div
-                className="flex flex-row justify-start items-center w-full h-12 border-b-2 border-gray-300"
+                className="flex flex-row justify-start items-center w-full h-8 border-b-2 border-gray-300"
             >
                 <button
                     className={classNames(
-                        "px-4 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100",
+                        "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 text-sm",
                         {
                             "bg-primary-1 text-primary-1-text hover:bg-primary-1-hover": drawingMode,
                         }
@@ -237,22 +362,197 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
                     onClick={() => { setDrawingMode(!drawingMode) }}
                 >
                     <FontAwesomeIcon icon={faPen} />
-                    <span className="ml-2">Draw</span>
                 </button>
-                <button
-                    className={classNames(
-                        "px-4 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500",
-                    )}
-                    disabled={drawingMode || !canvas}
-                    onClick={() => { deleteSelected() }}
-                >
-                    <FontAwesomeIcon icon={faTrash} />
-                    <span className="ml-2">Trash</span>
-                </button>
+                {!drawingMode &&
+                    <>
+                        <button
+                            className={classNames(
+                                "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
+                            )}
+                            disabled={drawingMode || !canvas}
+                            onClick={() => { deleteSelected() }}
+                        >
+                            <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                        {/* Flip vertical */}
+                        <button
+                            className={classNames(
+                                "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
+                            )}
+                            disabled={drawingMode || !canvas}
+                            onClick={() => { flipVertical() }}
+                        >
+                            <FlipIcon style={{ transform: "rotate(90deg)" }} className="p-1" />
+                        </button>
+                        {/* Flip horizontal */}
+                        <button
+                            className={classNames(
+                                "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
+                            )}
+                            disabled={drawingMode || !canvas}
+                            onClick={() => { flipHorizontal() }}
+                        >
+                            <FlipIcon className="p-1" />
+                        </button>
+                        {/* Center */}
+                        <button
+                            className={classNames(
+                                "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
+                            )}
+                            disabled={drawingMode || !canvas}
+                            onClick={() => { centerSelected() }}
+                        >
+                            <FontAwesomeIcon icon={faArrowsToDot} />
+                        </button>
+                    </>
+                }
+                {drawingMode &&
+                    <>
+                        <div
+                            className="flex flex-row items-center"
+                        >
+                            <button
+                                className={classNames(
+                                    "px-2 py-1 border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
+                                )}
+                                disabled={!drawingMode || !canvas}
+                                onClick={() => { switchPencilWidth(5) }}
+                            >
+                                <div
+                                    className={classNames(
+                                        "w-2 h-2 rounded-full bg-black",
+                                    )}
+                                />
+                            </button>
+                            <button
+                                className={classNames(
+                                    "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
+                                )}
+                                disabled={!drawingMode || !canvas}
+                                onClick={() => { switchPencilWidth(10) }}
+                            >
+                                <div
+                                    className={classNames(
+                                        "w-4 h-4 rounded-full bg-black",
+                                    )}
+                                />
+                            </button>
+                            <button
+                                className={classNames(
+                                    "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
+                                )}
+                                disabled={!drawingMode || !canvas}
+                                onClick={() => { switchPencilWidth(15) }}
+                            >
+                                <div
+                                    className={classNames(
+                                        "w-6 h-6 rounded-full bg-black",
+                                    )}
+                                />
+                            </button>
+                        </div>
+                        <div
+                            className="flex flex-row items-center"
+                        >
+                            <button
+                                className={classNames(
+                                    "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
+                                )}
+                                disabled={!drawingMode || !canvas}
+                                onClick={() => { switchPencilColor("#000000") }}
+                            >
+                                <div
+                                    className={classNames(
+                                        "w-4 h-4 rounded-full bg-black",
+                                    )}
+                                />
+                            </button>
+                            <button
+                                className={classNames(
+                                    "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
+                                )}
+                                disabled={!drawingMode || !canvas}
+                                onClick={() => { switchPencilColor("#ffffff") }}
+                            >
+                                <div
+                                    className={classNames(
+                                        "w-4 h-4 rounded-full bg-white border-2 border-gray-300",
+                                    )}
+                                />
+                            </button>
+                            {/* Default colors - Warn, Success, Primary, Danger */}
+                            <div
+                                className="flex flex-row items-center"
+                            >
+                                <button
+                                    className={classNames(
+                                        "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
+                                    )}
+                                    disabled={!drawingMode || !canvas}
+                                    onClick={() => { switchPencilColor("#f59e0b") }}
+                                >
+                                    <div
+                                        className={classNames(
+                                            "w-4 h-4 rounded-full bg-[#f59e0b]",
+                                        )}
+                                    />
+                                </button>
+                                <button
+                                    className={classNames(
+                                        "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
+                                    )}
+                                    disabled={!drawingMode || !canvas}
+                                    onClick={() => { switchPencilColor("#d9463e") }}
+                                >
+                                    <div
+                                        className={classNames(
+                                            "w-4 h-4 rounded-full bg-[#d9463e]",
+                                        )}
+                                    />
+                                </button>
+                                <button
+                                    className={classNames(
+                                        "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
+                                    )}
+                                    disabled={!drawingMode || !canvas}
+                                    onClick={() => { switchPencilColor("#2da44e") }}
+                                >
+                                    <div
+                                        className={classNames(
+                                            "w-4 h-4 rounded-full bg-[#2da44e]",
+                                        )}
+                                    />
+                                </button>
+                                <button
+                                    className={classNames(
+                                        "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
+                                    )}
+                                    disabled={!drawingMode || !canvas}
+                                    onClick={() => { switchPencilColor("#3b82f6") }}
+                                >
+                                    <div
+                                        className={classNames(
+                                            "w-4 h-4 rounded-full bg-[#3b82f6]",
+                                        )}
+                                    />
+                                </button>
+                            </div>
+                        </div>
+                    </>
+                }
                 <div className="flex-grow min-w-[10px]"></div>
                 <button
                     className={classNames(
-                        "px-4 py-1 h-full border-l-2 border-gray-300 hover:bg-gray-100",
+                        "px-2 py-1 h-full border-l-2 border-gray-300 hover:bg-gray-100 text-sm",
+                    )}
+                    onClick={() => { uploadImage() }}
+                >
+                    <FontAwesomeIcon icon={faUpload} />
+                    <span className="ml-2">Upload</span>
+                </button>
+                <button
+                    className={classNames(
+                        "px-2 py-1 h-full border-l-2 border-gray-300 hover:bg-gray-100 text-sm",
                     )}
                     onClick={() => { canvas!.clear() }}
                 >
@@ -261,7 +561,7 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
                 </button>
                 <button
                     className={classNames(
-                        "px-4 py-1 h-full border-l-2 border-gray-300 hover:bg-gray-100",
+                        "px-2 py-1 h-full border-l-2 border-gray-300 hover:bg-gray-100 text-sm",
                     )}
                     onClick={() => { saveAsImage() }}
                 >
@@ -273,7 +573,7 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
             {/* Canvas */}
             <div
                 id="canvas-container"
-                className="relative overflow-scroll flex-grow flex flex-col justify-center items-center w-full h-64"
+                className="relative overflow-scroll flex-grow flex flex-col justify-center items-center w-full h-80"
             >
                 <canvas id="canvas"
                     className={classNames(
@@ -297,14 +597,43 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
             </div>
             {/* Sidebar */}
             <div
-                className="flex flex-row h-12 border-t-2 border-gray-300"
+                className="flex flex-row h-8 border-t-2 border-gray-300"
             >
                 <button
-                    className="px-4 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100"
+                    className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
                     onClick={() => { addText() }}
                 >
                     <FontAwesomeIcon icon={faSignature} />
-                    <span className="ml-2">Text</span>
+                </button>
+                <button
+                    className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
+                    onClick={() => { addAsset(Arrow) }}
+                >
+                    <img src={Arrow} className="h-4 w-4 object-contain" />
+                </button>
+                <button
+                    className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
+                    onClick={() => { addAsset(Check) }}
+                >
+                    <img src={Check} className="h-4 w-4 object-contain" />
+                </button>
+                <button
+                    className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
+                    onClick={() => { addAsset(Deny) }}
+                >
+                    <img src={Deny} className="h-4 w-4 object-contain" />
+                </button>
+                <button
+                    className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
+                    onClick={() => { addAsset(QuestionMark) }}
+                >
+                    <img src={QuestionMark} className="h-4 w-4 object-contain" />
+                </button>
+                <button
+                    className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
+                    onClick={() => { addAsset(ExclamationMark) }}
+                >
+                    <img src={ExclamationMark} className="h-4 w-4 object-contain" />
                 </button>
             </div>
         </div>

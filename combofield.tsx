@@ -206,7 +206,7 @@ export default function ComboField ({ className, enableResetButton = false, ...p
             <Combobox
                 ref={comboRef}
                 as="div"
-                className={`w-full h-full`}
+                className={`w-full h-full flex flex-row items-center justify-center relative`}
                 disabled={props.disabled}
                 value={values?.find((value) => {
                     return value.value === selected
@@ -236,7 +236,7 @@ export default function ComboField ({ className, enableResetButton = false, ...p
                         onChange={(e) => { }}
                     />
                 </Combobox.Button>
-                <Combobox.Button className={`absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none ${props.disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                <Combobox.Button className={`inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none ${props.disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
                     <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
                 </Combobox.Button>
 

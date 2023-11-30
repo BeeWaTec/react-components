@@ -2,9 +2,9 @@ import classNames from "classnames";
 import React from "react";
 import './form-group.css';
 
-interface FormGroupProps extends React.HTMLAttributes<HTMLDivElement> {
+interface FormGroupColumnProps extends React.HTMLAttributes<HTMLDivElement> {
 }
-function FormGroup (props: FormGroupProps) {
+function FormGroupColumn (props: FormGroupColumnProps) {
     const { ...restProps } = props;
 
     // Create children array
@@ -15,7 +15,7 @@ function FormGroup (props: FormGroupProps) {
     return (
         <div
             className={classNames(
-                'form-group mt-4 mb-4 container mx-auto flex flex-col items-stretch shadow-sm bg-white rounded-md border border-gray-200',
+                'form-group-column mx-auto flex flex-col items-stretch w-full',
                 restProps.className
             )}
             {...restProps}
@@ -35,4 +35,6 @@ function FormGroup (props: FormGroupProps) {
     );
 }
 
-export default FormGroup;
+FormGroupColumn.name = 'FormGroupColumn';
+
+export default FormGroupColumn;

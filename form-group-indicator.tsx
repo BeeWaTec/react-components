@@ -11,7 +11,7 @@ function FormGroupIndicator (props: FormGroupIndicatorProps) {
     return (
         <div
             className={classNames(
-                `w-2 flex items-center justify-center`,
+                `w-[0.5rem] max-w-[0.5rem] min-w-[0.5rem] flex items-center justify-center form-group-indicator`,
                 {
                     'bg-green-600': status === 'ok',
                     'bg-yellow-600': status === 'warning',

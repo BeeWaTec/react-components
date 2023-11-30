@@ -12,7 +12,7 @@ function FormGroupPrefixText (props: FormGroupPrefixTextProps) {
     return (
         <div
             className={classNames(
-                `form-group-prefix-text w-44 max-w-lg flex items-center justify-center text-gray-800`,
+                `form-group-prefix-text w-[11rem] min-w-[11rem] max-w-[11rem] flex items-center justify-center text-gray-800`,
                 restProps.className
             )}
             {...restProps}
