@@ -10,8 +10,6 @@ function FormGroup (props: FormGroupProps) {
     // Create children array
     const children = React.Children.toArray(props.children);
 
-    console.log(children);
-
     return (
         <div
             className={classNames(

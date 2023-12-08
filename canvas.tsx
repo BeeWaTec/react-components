@@ -1,10 +1,11 @@
-import React, { ReactElement, RefAttributes, ForwardRefRenderFunction, forwardRef, useState, useEffect } from "react";
+import React, { ReactElement, RefAttributes, ForwardRefRenderFunction, forwardRef, useState, useEffect, useImperativeHandle, Ref, useRef } from "react";
 import { FabricJSCanvas, useFabricJSEditor } from 'fabricjs-react'
 import classNames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignature } from "@fortawesome/pro-regular-svg-icons";
 import { fabric } from 'fabric';
-import { faDownload, faEmptySet, faPen, faTrash, faArrowsToDot, faUpload } from "@fortawesome/pro-solid-svg-icons";
+import { v1 as uuidv1, v3 as uuidv3, v4 as uuidv4, v5 as uuidv5 } from "uuid";
+import { faDownload, faEmptySet, faPen, faTrash, faArrowsToDot, faUpload, faCropSimple } from "@fortawesome/pro-solid-svg-icons";
 import FlipIcon from '@mui/icons-material/Flip';
 import Arrow from "./assets/canvas/Arrow.png";
 import Check from "./assets/canvas/Check.png";
@@ -37,13 +38,22 @@ interface CanvasProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, ref) {
 
+    // UUID
+    const id = useRef<string | null>(null);
     const { className, ...restProps } = props;
 
     const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
     const [drawingMode, setDrawingMode] = useState<boolean>(false);
     const [showDropEvent, setShowDropEvent] = useState<boolean>(false);
 
+    // Timer to trigger onCanvasChange
+    const [onCanvasChangeTimer, setOnCanvasChangeTimer] = useState<NodeJS.Timeout | null>(null);
+
     useEffect(() => {
+
+        // Generate UUID
+        id.current = uuidv4();
+        console.log(`[Canvas - ${id.current}] Mounted. Initializing...`)
 
         let canvas = new fabric.Canvas('canvas', {
             backgroundColor: 'white',
@@ -69,7 +79,7 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
         let value = props.value;
         if (value) {
             timer = setTimeout(() => {
-                canvas.loadFromJSON(value, () => {
+                canvas.loadFromJSON(value === '' ? '{}' : value, () => {
                     canvas.renderAll();
                 });
             }, 0);
@@ -78,16 +88,34 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
         setCanvas(canvas);
 
         return () => {
+
+            console.log(`[Canvas - ${id.current}] Dismounted. Cleaning up...`)
+
             if (canvas) canvas.dispose();
             window.removeEventListener('resize', resizeCanvas, false);
             clearTimeout(timer);
+
+            // Clear timer
+            if (onCanvasChangeTimer) clearTimeout(onCanvasChangeTimer);
         };
     }, []);
+
+    // Update when value changes
+    useEffect(() => {
+        if (canvas) {
+            console.log(`Canvas value changed to ${props.value}`)
+            // Use timer
+            setTimeout(() => {
+                canvas.loadFromJSON(props.value === '' ? '{}' : props.value, () => {
+                    canvas.renderAll();
+                });
+            }, 0);
+        }
+    }, [props.value]);
 
     useEffect(() => {
         if (canvas) {
             canvas.isDrawingMode = drawingMode;
-            console.log(canvas.isDrawingMode);
         }
     }, [canvas, drawingMode]);
 
@@ -123,7 +151,6 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
                     let reader = new FileReader();
                     reader.onload = (e) => {
                         let dataURL = e.target!.result;
-                        console.log(dataURL);
                         fabric.Image.fromURL(dataURL as string, (img) => {
                             img.set({
                                 // Center image
@@ -172,19 +199,65 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
     useEffect(() => {
         if (canvas) {
             canvas.on('object:modified', (e) => {
-                let json = JSON.stringify(canvas!.toJSON());
-                if (props.onCanvasChange) props.onCanvasChange(json);
+                // Clear timer
+                if (onCanvasChangeTimer) clearTimeout(onCanvasChangeTimer);
+                // Set timer
+                setOnCanvasChangeTimer(setTimeout(() => {
+                    console.log(`[Canvas - ${id.current}] Object modified`)
+                    let json = JSON.stringify(canvas!.toJSON());
+                    if (props.onCanvasChange) props.onCanvasChange(json);
+                }, 0));
             });
             canvas.on('object:added', (e) => {
-                let json = JSON.stringify(canvas!.toJSON());
-                if (props.onCanvasChange) props.onCanvasChange(json);
+                // Clear timer
+                if (onCanvasChangeTimer) clearTimeout(onCanvasChangeTimer);
+                // Set timer
+                setOnCanvasChangeTimer(setTimeout(() => {
+                    console.log(`[Canvas - ${id.current}] Object added`)
+                    let json = JSON.stringify(canvas!.toJSON());
+                    if (props.onCanvasChange) props.onCanvasChange(json);
+                }, 0));
             });
             canvas.on('object:removed', (e) => {
-                let json = JSON.stringify(canvas!.toJSON());
-                if (props.onCanvasChange) props.onCanvasChange(json);
+                // Clear timer
+                if (onCanvasChangeTimer) clearTimeout(onCanvasChangeTimer);
+                // Set timer
+                setOnCanvasChangeTimer(setTimeout(() => {
+                    console.log(`[Canvas - ${id.current}] Object removed`)
+                    let json = JSON.stringify(canvas!.toJSON());
+                    if (props.onCanvasChange) props.onCanvasChange(json);
+                }, 0));
             });
         }
+
+        return () => {
+            if (canvas) {
+                canvas.off('object:modified');
+                canvas.off('object:added');
+                canvas.off('object:removed');
+            }
+        }
     }, [canvas, props.onCanvasChange]);
+
+    // getCanvas, getJson, setJson, ...
+    useImperativeHandle(ref as Ref<{ getCanvas: () => fabric.Canvas | null, getJson: () => string, setJson: (json: string) => void }>, () => ({
+        getCanvas: () => {
+            return canvas;
+        },
+        getJson: () => {
+            if (canvas) {
+                return JSON.stringify(canvas.toJSON());
+            }
+            return '';
+        },
+        setJson: (json: string) => {
+            if (canvas) {
+                canvas.loadFromJSON(json === '' ? '{}' : json, () => {
+                    canvas.renderAll();
+                });
+            }
+        },
+    }));
 
     function deleteSelected () {
         // Get active group
@@ -267,22 +340,27 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
     }
 
     function objectToCanvasSize (object: fabric.Object, objectFit: 'contain' | 'cover' | 'fill', scale: number = 1) {
-        let boundingRect = object.getBoundingRect();
         let canvasWidth = canvas!.getWidth();
         let canvasHeight = canvas!.getHeight();
-        let scaleX = canvasWidth / boundingRect.width;
-        let scaleY = canvasHeight / boundingRect.height;
-        let canvasScale = 1;
+        let objectWidth = object.getScaledWidth();
+        let objectHeight = object.getScaledHeight();
+
+        let scaleWidth = canvasWidth / objectWidth;
+        let scaleHeight = canvasHeight / objectHeight;
+
+        let applyScale = 0;
         if (objectFit === 'contain') {
-            canvasScale = Math.min(scaleX, scaleY);
+            applyScale = Math.min(scaleWidth, scaleHeight);
         } else if (objectFit === 'cover') {
-            canvasScale = Math.max(scaleX, scaleY);
+            applyScale = Math.max(scaleWidth, scaleHeight);
         } else if (objectFit === 'fill') {
-            canvasScale = Math.max(scaleX, scaleY);
+            applyScale = Math.min(scaleWidth, scaleHeight);
         }
-        // Apply scale
-        scale = canvasScale * scale;
-        object.scale(scale);
+
+        object.scaleToWidth(objectWidth * applyScale * scale);
+        object.scaleToHeight(objectHeight * applyScale * scale);
+        object.center();
+        canvas!.renderAll();
     }
 
     function flipVertical () {
@@ -315,18 +393,18 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
         brush.color = color;
     }
 
-    function uploadImage(){
+    function uploadImage () {
         const input = document.createElement('input');
         input.setAttribute('type', 'file');
         input.setAttribute('accept', 'image/*');
         input.click();
-        input.onchange = function() {
+        input.onchange = function () {
             const file = input.files![0];
             const reader = new FileReader();
-            reader.onload = function() {
+            reader.onload = function () {
                 const img = new Image();
                 img.src = reader.result as string;
-                img.onload = function() {
+                img.onload = function () {
                     const imgInstance = new fabric.Image(img, {
                         left: canvas!.getWidth() / 2,
                         top: canvas!.getHeight() / 2,
@@ -403,6 +481,16 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
                             onClick={() => { centerSelected() }}
                         >
                             <FontAwesomeIcon icon={faArrowsToDot} />
+                        </button>
+                        {/* To canvas size */}
+                        <button
+                            className={classNames(
+                                "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
+                            )}
+                            disabled={drawingMode || !canvas}
+                            onClick={() => { selectedToCanvasSize('contain') }}
+                        >
+                            <FontAwesomeIcon icon={faCropSimple} />
                         </button>
                     </>
                 }
