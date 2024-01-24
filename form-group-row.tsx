@@ -4,9 +4,10 @@ import TextArea from "./text-area";
 
 interface FormGroupRowProps extends React.HTMLAttributes<HTMLDivElement> {
     seperator?: boolean;
+    dynamicHeight?: boolean;
 }
 const FormGroupRow: React.FC<FormGroupRowProps> = React.forwardRef<HTMLDivElement, FormGroupRowProps>((props, ref) => {
-    const { seperator = true, className, ...restProps } = props;
+    const { seperator = true, dynamicHeight, className, ...restProps } = props;
 
     // Create children array
     const children = React.Children.toArray(props.children);
@@ -26,7 +27,7 @@ const FormGroupRow: React.FC<FormGroupRowProps> = React.forwardRef<HTMLDivElemen
         <div
             className={classNames(
                 'form-group-row flex flex-row justify-stretch items-stretch',
-                hasDynamicHeight ? 'h-full' : 'h-10',
+                hasDynamicHeight || dynamicHeight ? 'h-full' : 'h-10',
                 className,
             )}
             {...restProps}

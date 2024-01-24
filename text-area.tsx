@@ -1,6 +1,7 @@
 import React, { forwardRef, MutableRefObject, ReactNode, useEffect, useRef, useState } from 'react'
 import axiosInstance from '@/helpers/base/axios'
 import { toast } from 'react-toastify'
+import classNames from 'classnames';
 
 interface TextAreaProps {
     className?: string,
@@ -15,6 +16,7 @@ interface TextAreaProps {
     disabled?: boolean,
     validationRulesPath?: string,
     showSpinner?: boolean,
+    resize?: 'none' | 'vertical' | 'horizontal' | 'both',
     updateValuePath?: string,
     updateValueMethod?: 'post' | 'put' | 'patch',
     updateValueParams?: any,
@@ -24,7 +26,7 @@ interface TextAreaProps {
     style?: React.CSSProperties,
     onChange?: (value: React.ChangeEvent<HTMLTextAreaElement>) => void,
 }
-const TextArea = forwardRef(({ className, updateValueKey = 'value', updateValueMethod = 'post', disabled = false, showSpinner = false, requireAccept = false, ...props }: TextAreaProps, ref) => {
+const TextArea = forwardRef(({ className, updateValueKey = 'value', updateValueMethod = 'post', disabled = false, showSpinner = false, resize = 'vertical', requireAccept = false, ...props }: TextAreaProps, ref) => {
 
     // Reference to input field
     const inputRef = useRef() as MutableRefObject<HTMLTextAreaElement>
@@ -174,7 +176,15 @@ const TextArea = forwardRef(({ className, updateValueKey = 'value', updateValueM
             {/* Input Field */}
             <textarea
                 ref={inputRef}
-                className={`inset-y-0 items-center grow pr-2 pl-2 border-0 focus:ring-0 focus:border-0 focus:outline-none`}
+                className={classNames(
+                    `inset-y-0 items-center grow pr-2 pl-2 border-0 focus:ring-0 focus:border-0 focus:outline-none`,
+                    {
+                        'resize-none': resize == 'none',
+                        'resize-vertical': resize == 'vertical',
+                        'resize-horizontal': resize == 'horizontal',
+                        'resize-both': resize == 'both',
+                    }
+                )}
                 name={typeof props.name !== 'undefined' ? props.name : ''}
                 style={{
                     minHeight: '100%',
