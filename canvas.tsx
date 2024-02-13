@@ -12,6 +12,7 @@ import Check from "./assets/canvas/Check.png";
 import Deny from "./assets/canvas/Deny.png";
 import QuestionMark from "./assets/canvas/QuestionMark.png";
 import ExclamationMark from "./assets/canvas/ExclamationMark.png";
+import { StaticImageData } from "next/image";
 
 /*
     Canvas to "draw" on
@@ -240,7 +241,8 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
     }, [canvas, props.onCanvasChange]);
 
     // getCanvas, getJson, setJson, ...
-    useImperativeHandle(ref as Ref<{ getCanvas: () => fabric.Canvas | null, getJson: () => string, setJson: (json: string) => void }>, () => ({
+    const canvasRef = useRef<{ getCanvas: () => fabric.Canvas | null, getJson: () => string, setJson: (json: string) => void }>(null);
+    useImperativeHandle(canvasRef, () => ({
         getCanvas: () => {
             return canvas;
         },
@@ -695,33 +697,33 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
                 </button>
                 <button
                     className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                    onClick={() => { addAsset(Arrow) }}
+                    onClick={() => { addAsset(Arrow.src) }}
                 >
-                    <img src={Arrow} className="h-4 w-4 object-contain" />
+                    <img src={Arrow.src} className="h-4 w-4 object-contain" />
                 </button>
                 <button
                     className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                    onClick={() => { addAsset(Check) }}
+                    onClick={() => { addAsset(Check.src) }}
                 >
-                    <img src={Check} className="h-4 w-4 object-contain" />
+                    <img src={Check.src} className="h-4 w-4 object-contain" />
                 </button>
                 <button
                     className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                    onClick={() => { addAsset(Deny) }}
+                    onClick={() => { addAsset(Deny.src) }}
                 >
-                    <img src={Deny} className="h-4 w-4 object-contain" />
+                    <img src={Deny.src} className="h-4 w-4 object-contain" />
                 </button>
                 <button
                     className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                    onClick={() => { addAsset(QuestionMark) }}
+                    onClick={() => { addAsset(QuestionMark.src) }}
                 >
-                    <img src={QuestionMark} className="h-4 w-4 object-contain" />
+                    <img src={QuestionMark.src} className="h-4 w-4 object-contain" />
                 </button>
                 <button
                     className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                    onClick={() => { addAsset(ExclamationMark) }}
+                    onClick={() => { addAsset(ExclamationMark.src) }}
                 >
-                    <img src={ExclamationMark} className="h-4 w-4 object-contain" />
+                    <img src={ExclamationMark.src} className="h-4 w-4 object-contain" />
                 </button>
             </div>
         </div>

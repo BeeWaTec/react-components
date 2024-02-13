@@ -14,6 +14,8 @@ interface InputFieldProps extends React.DetailedHTMLProps<React.InputHTMLAttribu
     step?: string | number,
     min?: string | number,
     max?: string | number,
+    prefixElement?: ReactNode,
+    suffixElement?: ReactNode,
     hideWhenvalue?: string | number,
     suffix?: string | ReactNode,
     disabled?: boolean,
@@ -218,20 +220,20 @@ const InputField = forwardRef((props: InputFieldProps, ref) => {
                     <span className="text-gray-500">{props.prefix}</span>
                 </div>
             }
-            {typeof props.prefix !== 'string' && typeof props.prefix !== 'undefined' && props.prefix !== null &&
-                <div
-                    className={`inset-y-0 grow-0 flex flex-row justify-center items-center select-none ${onPrefixPressed ? 'cursor-pointer' : ''}`}
-                    onClick={(e) => onPrefixPressed && onPrefixPressed(e)}
-                >
-                    {props.prefix}
-                </div>
-            }
             {((typeof props.prefix == 'string' && props.prefix !== '') || (typeof props.prefix !== 'undefined' && props.prefix !== null)) &&
                 <div
                     className={`inset-y-0 grow-0 flex flex-row justify-center items-stretch select-none ${onPrefixPressed ? 'cursor-pointer' : ''}`}
                     onClick={(e) => onPrefixPressed && onPrefixPressed(e)}
                 >
                     <div className="w-px bg-gray-300"></div>
+                </div>
+            }
+            {typeof props.prefixElement !== 'undefined' && props.prefixElement !== null &&
+                <div
+                    className={`mx-2 inset-y-0 grow-0 flex flex-col justify-center items-center select-none ${onPrefixPressed ? 'cursor-pointer' : ''}`}
+                    onClick={(e) => onPrefixPressed && onPrefixPressed(e)}
+                >
+                    {props.prefixElement}
                 </div>
             }
 
@@ -300,12 +302,12 @@ const InputField = forwardRef((props: InputFieldProps, ref) => {
                     <span className="text-gray-500">{props.suffix}</span>
                 </div>
             }
-            {typeof props.suffix !== 'string' && typeof props.suffix !== 'undefined' && props.suffix !== null &&
+            {typeof props.suffixElement !== 'undefined' && props.suffixElement !== null &&
                 <div
                     className={`inset-y-0 mr-2 grow-0 flex flex-col justify-center items-center select-none ${onSuffixPressed ? 'cursor-pointer' : ''}`}
                     onClick={(e) => onSuffixPressed && onSuffixPressed(e)}
                 >
-                    {props.suffix}
+                    {props.suffixElement}
                 </div>
             }
 
