@@ -1143,47 +1143,6 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                     </div>
                 </div>
             </div>
-            {/* Sidebar */}
-            <div
-                className="flex flex-row h-8 border-t-2 border-gray-300"
-            >
-                <button
-                    className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                    onClick={() => { addText() }}
-                >
-                    <FontAwesomeIcon icon={faSignature} />
-                </button>
-                <button
-                    className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                    onClick={() => { addAsset(Arrow.src) }}
-                >
-                    <img src={Arrow.src} className="h-4 w-4 object-contain" />
-                </button>
-                <button
-                    className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                    onClick={() => { addAsset(Check.src) }}
-                >
-                    <img src={Check.src} className="h-4 w-4 object-contain" />
-                </button>
-                <button
-                    className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                    onClick={() => { addAsset(Deny.src) }}
-                >
-                    <img src={Deny.src} className="h-4 w-4 object-contain" />
-                </button>
-                <button
-                    className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                    onClick={() => { addAsset(QuestionMark.src) }}
-                >
-                    <img src={QuestionMark.src} className="h-4 w-4 object-contain" />
-                </button>
-                <button
-                    className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                    onClick={() => { addAsset(ExclamationMark.src) }}
-                >
-                    <img src={ExclamationMark.src} className="h-4 w-4 object-contain" />
-                </button>
-            </div>
         </div>
     </>;
 });
