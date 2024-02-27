@@ -16,12 +16,19 @@ import { StaticImageData } from "next/image";
 import { Tooltip } from "react-tooltip";
 
 interface CanvasProps extends React.HTMLAttributes<HTMLDivElement> {
-    canvasRef?: React.Ref<HTMLDivElement>
     value?: string
     initZoom?: number
+    getCanvas?: () => fabric.Canvas | null
+    getJson?: () => string
+    setJson?: (json: string) => void
     onCanvasChange?: (json: string) => void
 }
-const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, ref) {
+type CanvasType = {
+    getCanvas: () => fabric.Canvas | null
+    getJson: () => string
+    setJson: (json: string) => void
+}
+const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) {
 
     // UUID
     const id = useRef<string | null>(null);
@@ -229,8 +236,7 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
     }, [canvas, props.onCanvasChange]);
 
     // getCanvas, getJson, setJson, ...
-    const canvasRef = useRef<{ getCanvas: () => fabric.Canvas | null, getJson: () => string, setJson: (json: string) => void }>(null);
-    useImperativeHandle(canvasRef, () => ({
+    useImperativeHandle(ref, () => ({
         getCanvas: () => {
             return canvas;
         },
@@ -260,6 +266,8 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
         }
         // Deselct all objects
         canvas!.discardActiveObject();
+        // Render
+        canvas!.renderAll();
     }
 
     function addText () {
@@ -276,6 +284,8 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
             originY: 'center',
         });
         canvas!.add(text);
+        canvas!.setActiveObject(text);
+        canvas!.renderAll();
     }
 
     function saveAsImage () {
@@ -318,6 +328,8 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
             objectToCanvasSize(img, 'contain', 0.5);
 
             canvas!.add(img);
+            canvas!.setActiveObject(img);
+            canvas!.renderAll();
         });
     }
 
@@ -402,6 +414,8 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
                         originY: 'center',
                     });
                     canvas!.add(imgInstance);
+                    canvas!.setActiveObject(imgInstance);
+                    canvas!.renderAll();
                 }
             }
             reader.readAsDataURL(file);
@@ -1178,3 +1192,4 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(function Canvas (props, r
 Canvas.displayName = "Canvas";
 
 export default Canvas;
+export type { CanvasType };

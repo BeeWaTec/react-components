@@ -10,7 +10,7 @@ interface ComboFieldProps {
     name?: string,
     id?: string,
     values?: { value: string | number, label: string }[],
-    selected?: string | null,
+    selected?: string | number | null,
     placeholder?: string,
     loadValuesPath?: {
         url: string,

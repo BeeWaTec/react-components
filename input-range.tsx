@@ -3,7 +3,7 @@ import axiosInstance from '@/helpers/base/axios'
 import { toast } from 'react-toastify'
 import Spinner from './spinner';
 import classNames from 'classnames';
-import styles from './input-range.module.css'
+import './input-range.module.css'
 
 interface InputRangeProps {
     id?: string,
@@ -49,7 +49,7 @@ const InputRange = forwardRef(({ className, disabled, onDeclinePressed, onAccept
     return (
         <div
             className={classNames(
-                ` transition-colors`,
+                `transition-colors`,
                 'relative border-2 border-solid border-gray-300 shadow-sm focus:border-theme-primary-light focus-within:border-slate-600 sm:text-sm h-8 flex items-stretch w-full',
                 className,
             )}
@@ -62,8 +62,8 @@ const InputRange = forwardRef(({ className, disabled, onDeclinePressed, onAccept
             {/* Input Field */}
             <input
                 ref={inputRef}
-                className={styles.slider}
                 style={{ minWidth: 0, maxWidth: '100%' }}
+                className='slider'
                 type='range'
                 name={props.name}
                 id={props.id}
