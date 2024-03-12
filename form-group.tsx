@@ -24,7 +24,9 @@ function FormGroup (props: FormGroupProps) {
                 }
                 return (
                     <>
-                        <hr/>
+                        <hr
+                            key={`form-group-divider-${idx}`}
+                        />
                         {child}
                     </>
                 );

@@ -11,7 +11,7 @@ export default function Breadcrumbs({ homeHref, pages, showLoading = false }: Pr
 
     return (
         <nav className="flex" aria-label="Breadcrumb">
-            <ol role="list" className="flex space-x-4 rounded-md bg-white px-6 shadow">
+            <ol className="flex space-x-4 rounded-md bg-white px-6 shadow">
                 <li className="flex">
                     <div className="flex items-center justify-center h-full text-gray-400">
                         {!homeHref || homeHref == null || /^https?:\/\/((?:[\w\d-]+\.)+[\w\d]{2,}).*$/.test(homeHref) ?

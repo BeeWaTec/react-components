@@ -26,7 +26,9 @@ function FormGroupColumn (props: FormGroupColumnProps) {
                 }
                 return (
                     <>
-                        <hr/>
+                        <hr
+                            key={`form-group-divider-${idx}`}
+                        />
                         {child}
                     </>
                 );

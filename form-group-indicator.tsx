@@ -7,7 +7,7 @@ interface FormGroupIndicatorProps extends React.HTMLAttributes<HTMLDivElement> {
     customColor?: string,
     customTooltipContent?: string,
 }
-function FormGroupIndicator (props: FormGroupIndicatorProps) {
+function FormGroupIndicator(props: FormGroupIndicatorProps) {
     const { status, customColor, ...restProps } = props;
 
     const uuid = Math.random().toString(36).substring(7);

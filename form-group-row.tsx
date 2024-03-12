@@ -31,6 +31,8 @@ const FormGroupRow: React.FC<FormGroupRowProps> = React.forwardRef<HTMLDivElemen
 
     return (
         <div
+            key='form-group-row'
+            id='form-group-row'
             className="relative"
         >
             {props.help && (
@@ -66,7 +68,11 @@ const FormGroupRow: React.FC<FormGroupRowProps> = React.forwardRef<HTMLDivElemen
                     return (
                         <>
                             {seperator && (
-                                <div className='vr' />
+                                <div
+                                    key={`form-group-row-divider-${idx}`}
+                                    id={`form-group-row-divider-${idx}`}
+                                    className='vr'
+                                />
                             )}
                             {child}
                         </>
