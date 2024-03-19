@@ -1,0 +1,7 @@
+.slider {
+    @apply border border-gray-300 rounded-md;
+}
+
+.form-group .multiple-canvas {
+    @apply border-0;
+}
