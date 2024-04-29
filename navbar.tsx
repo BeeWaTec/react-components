@@ -192,7 +192,7 @@ function DefaultNavbar ({ navigationLinks = [], logo, logoText, user, showUser =
                                                                 >
                                                                     {({ active }) => (
                                                                         <Link
-                                                                            href={element.href}
+                                                                            href={element.href || '#'}
                                                                             onClick={element.onClick}
                                                                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                                                                         >
@@ -235,7 +235,7 @@ function DefaultNavbar ({ navigationLinks = [], logo, logoText, user, showUser =
                                                         <span className="sr-only">Open options</span>
                                                         <Image
                                                             src={`/media/flags/${lang}.webp`}
-                                                            alt={languages.find(language => language.locale == lang).name}
+                                                            alt={languages.find(language => language.locale == lang)?.name}
                                                             width={30}
                                                             height={30}
                                                             className='object-contain'

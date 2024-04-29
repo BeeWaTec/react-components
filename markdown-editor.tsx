@@ -147,7 +147,7 @@ const MarkdownEditor = forwardRef(({ className, value, onChange, ...props }: Mar
     // Call the onChange if text changes
     React.useEffect(() => {
         if (typeof onChange !== 'undefined') {
-            onChange(text);
+            onChange(text || '');
         }
     }, [text, onChange]);
 

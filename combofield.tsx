@@ -42,7 +42,7 @@ export default function ComboField ({ className, enableResetButton = false, ...p
     const inputRef = useRef() as MutableRefObject<HTMLInputElement>
 
     // Create states
-    const [selected, setSelected] = useState<string | null>(props.selected ?? null)
+    const [selected, setSelected] = useState<string | number | null>(props.selected ?? null)
     const [values, setValues] = useState<{ value: string | number, label: string }[] | undefined>(props.values)
     const [showDropdown, setShowDropdown] = useState<boolean>(false)
     const [loadingData, setLoadingData] = useState<boolean>(false)

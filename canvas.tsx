@@ -770,9 +770,9 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                                 <button
                                     data-tooltip-id={`canvas-tooltip-arrow-${id.current}`}
                                     className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                                    onClick={() => { addAsset(Arrow) }}
+                                    onClick={() => { addAsset(Arrow.src) }}
                                 >
-                                    <img src={Arrow} className="h-4 w-4 object-contain" />
+                                    <img src={Arrow.src} className="h-4 w-4 object-contain" />
                                 </button>
 
                                 <Tooltip
@@ -789,9 +789,9 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                                 <button
                                     data-tooltip-id={`canvas-tooltip-check-${id.current}`}
                                     className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                                    onClick={() => { addAsset(Check) }}
+                                    onClick={() => { addAsset(Check.src) }}
                                 >
-                                    <img src={Check} className="h-4 w-4 object-contain" />
+                                    <img src={Check.src} className="h-4 w-4 object-contain" />
                                 </button>
 
                                 <Tooltip
@@ -808,9 +808,9 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                                 <button
                                     data-tooltip-id={`canvas-tooltip-deny-${id.current}`}
                                     className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                                    onClick={() => { addAsset(Deny) }}
+                                    onClick={() => { addAsset(Deny.src) }}
                                 >
-                                    <img src={Deny} className="h-4 w-4 object-contain" />
+                                    <img src={Deny.src} className="h-4 w-4 object-contain" />
                                 </button>
 
                                 <Tooltip
@@ -827,9 +827,9 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                                 <button
                                     data-tooltip-id={`canvas-tooltip-question-mark-${id.current}`}
                                     className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                                    onClick={() => { addAsset(QuestionMark) }}
+                                    onClick={() => { addAsset(QuestionMark.src) }}
                                 >
-                                    <img src={QuestionMark} className="h-4 w-4 object-contain" />
+                                    <img src={QuestionMark.src} className="h-4 w-4 object-contain" />
                                 </button>
 
                                 <Tooltip
@@ -846,9 +846,9 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                                 <button
                                     data-tooltip-id={`canvas-tooltip-exclamation-mark-${id.current}`}
                                     className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                                    onClick={() => { addAsset(ExclamationMark) }}
+                                    onClick={() => { addAsset(ExclamationMark.src) }}
                                 >
-                                    <img src={ExclamationMark} className="h-4 w-4 object-contain" />
+                                    <img src={ExclamationMark.src} className="h-4 w-4 object-contain" />
                                 </button>
                             </div>
                         }
