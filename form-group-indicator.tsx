@@ -8,7 +8,7 @@ interface FormGroupIndicatorProps extends React.HTMLAttributes<HTMLDivElement> {
     customTooltipContent?: string,
 }
 function FormGroupIndicator(props: FormGroupIndicatorProps) {
-    const { status, customColor, ...restProps } = props;
+    const { className, status, customColor, ...restProps } = props;
 
     const uuid = Math.random().toString(36).substring(7);
 
@@ -92,7 +92,7 @@ function FormGroupIndicator(props: FormGroupIndicatorProps) {
                         'bg-blue-600 animate-pulse': status === 'loading',
                         'bg-white': status === 'neutral',
                     },
-                    restProps.className,
+                    className,
                 )}
                 style={{
                     color: status === 'custom' ? customColor : undefined,

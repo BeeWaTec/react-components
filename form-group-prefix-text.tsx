@@ -8,13 +8,13 @@ interface FormGroupPrefixTextProps extends React.HTMLAttributes<HTMLDivElement> 
     icon?: IconProp;
 }
 function FormGroupPrefixText (props: FormGroupPrefixTextProps) {
-    const { ...restProps } = props;
+    const { className, ...restProps } = props;
 
     return (
         <div
             className={classNames(
                 `form-group-prefix-text w-[11rem] min-w-[11rem] max-w-[11rem] flex items-center justify-center text-gray-800`,
-                restProps.className
+                className
             )}
             {...restProps}
         >

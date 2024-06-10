@@ -2,7 +2,7 @@ import classNames from "classnames";
 import React from "react";
 import TextArea from "./text-area";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faQuestion, faQuestionCircle } from "@fortawesome/pro-solid-svg-icons";
+import { faQuestion } from "@fortawesome/pro-solid-svg-icons";
 import HelpPopup from "./help-popup";
 
 interface FormGroupRowProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -32,7 +32,6 @@ const FormGroupRow: React.FC<FormGroupRowProps> = React.forwardRef<HTMLDivElemen
     return (
         <div
             key='form-group-row'
-            id='form-group-row'
             className="relative"
         >
             {props.help && (

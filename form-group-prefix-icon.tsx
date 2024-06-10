@@ -7,13 +7,13 @@ interface FormGroupPrefixIconProps extends React.HTMLAttributes<HTMLDivElement> 
     fontAwesomeIcon?: IconProp | [IconPrefix, IconName];
 }
 function FormGroupPrefixIcon (props: FormGroupPrefixIconProps) {
-    const { fontAwesomeIcon, ...restProps } = props;
+    const { className, fontAwesomeIcon, ...restProps } = props;
 
     return (
         <div
             className={classNames(
                 `w-10 h-10 flex items-center justify-center text-gray-800`,
-                restProps.className
+                className
             )}
             {...restProps}
         >

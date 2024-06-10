@@ -5,18 +5,16 @@ import './form-group.css';
 interface FormGroupColumnProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 function FormGroupColumn (props: FormGroupColumnProps) {
-    const { ...restProps } = props;
+    const { className, ...restProps } = props;
 
     // Create children array
     const children = React.Children.toArray(props.children);
-
-    console.log(children);
 
     return (
         <div
             className={classNames(
                 'form-group-column mx-auto flex flex-col items-stretch w-full',
-                restProps.className
+                className
             )}
             {...restProps}
         >

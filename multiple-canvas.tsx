@@ -109,7 +109,7 @@ const MultipleCanvas = forwardRef<HTMLDivElement, MultipleCanvasProps>((props, r
             </div>
             <Canvas
                 ref={canvasRef}
-                initZoom={0.8}
+                init_zoom={0.8}
                 onCanvasChange={(canvas) => {
                     canvasData[canvasDataIndex] = canvas;
                     setCanvasData(canvasData);

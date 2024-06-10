@@ -1,11 +1,10 @@
 import React, { ReactElement, RefAttributes, ForwardRefRenderFunction, forwardRef, useState, useEffect, useImperativeHandle, Ref, useRef } from "react";
-import { FabricJSCanvas, useFabricJSEditor } from 'fabricjs-react'
 import classNames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignature } from "@fortawesome/pro-regular-svg-icons";
 import { fabric } from 'fabric';
-import { v1 as uuidv1, v3 as uuidv3, v4 as uuidv4, v5 as uuidv5 } from "uuid";
-import { faDownload, faEmptySet, faPen, faTrash, faArrowsToDot, faUpload, faCropSimple, faExpand, faImage, faSearchPlus, faSearchMinus, faMagnifyingGlassPlus, faMagnifyingGlassMinus } from "@fortawesome/pro-solid-svg-icons";
+import { v4 as uuidv4 } from "uuid";
+import { faDownload, faEmptySet, faPen, faTrash, faArrowsToDot, faCropSimple, faExpand, faImage, faMagnifyingGlassPlus, faMagnifyingGlassMinus, faClipboard } from "@fortawesome/pro-solid-svg-icons";
 import FlipIcon from '@mui/icons-material/Flip';
 import Arrow from "./assets/canvas/Arrow.png";
 import Check from "./assets/canvas/Check.png";
@@ -14,10 +13,11 @@ import QuestionMark from "./assets/canvas/QuestionMark.png";
 import ExclamationMark from "./assets/canvas/ExclamationMark.png";
 import { StaticImageData } from "next/image";
 import { Tooltip } from "react-tooltip";
+import Resizer from "@/helpers/resizer";
 
 interface CanvasProps extends React.HTMLAttributes<HTMLDivElement> {
     value?: string
-    initZoom?: number
+    init_zoom?: number
     getCanvas?: () => fabric.Canvas | null
     getJson?: () => string
     setJson?: (json: string) => void
@@ -38,7 +38,7 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
     const [drawingMode, setDrawingMode] = useState<boolean>(false);
     const [showDropEvent, setShowDropEvent] = useState<boolean>(false);
     const [fullscreen, setFullscreen] = useState<boolean>(false);
-    const [zoom, setZoom] = useState<number>(props.initZoom || 1);
+    const [zoom, setZoom] = useState<number>(props.init_zoom || 1);
 
     // Timer to trigger onCanvasChange
     const [onCanvasChangeTimer, setOnCanvasChangeTimer] = useState<NodeJS.Timeout | null>(null);
@@ -146,19 +146,43 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                     let file = files[0];
                     let reader = new FileReader();
                     reader.onload = (e) => {
-                        let dataURL = e.target!.result;
-                        fabric.Image.fromURL(dataURL as string, (img) => {
-                            img.set({
-                                // Center image
-                                left: canvas!.getWidth() / 2,
-                                top: canvas!.getHeight() / 2,
-                                originX: 'center',
-                                originY: 'center',
-                            });
-
-                            objectToCanvasSize(img, 'contain');
-
-                            canvas!.add(img);
+                        // Resize before adding
+                        const image = new Promise<File>((resolve, reject) => {
+                            Resizer.imageFileResizer(
+                                file,
+                                512,
+                                512,
+                                'JPEG',
+                                80,
+                                0,
+                                (uri: any) => {
+                                    const file = new File([uri], "image.jpg", { type: "image/jpeg" });
+                                    resolve(file);
+                                },
+                                "blob",
+                                200,
+                                200
+                            );
+                        });
+                        image.then((file) => {
+                            console.log(file);
+                            const reader = new FileReader();
+                            reader.onload = function () {
+                                const img = new Image();
+                                img.src = reader.result as string;
+                                img.onload = function () {
+                                    const imgInstance = new fabric.Image(img, {
+                                        left: canvas!.getWidth() / 2,
+                                        top: canvas!.getHeight() / 2,
+                                        originX: 'center',
+                                        originY: 'center',
+                                    });
+                                    objectToCanvasSize(imgInstance, 'contain');
+                                    canvas!.add(imgInstance);
+                                    canvas!.renderAll();
+                                }
+                            }
+                            reader.readAsDataURL(file);
                         });
                     }
                     reader.readAsDataURL(file);
@@ -401,25 +425,102 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
         input.setAttribute('accept', 'image/*');
         input.click();
         input.onchange = function () {
+            // Get image, resize using Resizer, then add to canvas
             const file = input.files![0];
             const reader = new FileReader();
             reader.onload = function () {
-                const img = new Image();
-                img.src = reader.result as string;
-                img.onload = function () {
-                    const imgInstance = new fabric.Image(img, {
-                        left: canvas!.getWidth() / 2,
-                        top: canvas!.getHeight() / 2,
-                        originX: 'center',
-                        originY: 'center',
-                    });
-                    canvas!.add(imgInstance);
-                    canvas!.setActiveObject(imgInstance);
-                    canvas!.renderAll();
-                }
+                // Resize before adding
+                const image = new Promise<File>((resolve, reject) => {
+                    Resizer.imageFileResizer(
+                        file,
+                        512,
+                        512,
+                        'JPEG',
+                        80,
+                        0,
+                        (uri: any) => {
+                            const file = new File([uri], "image.jpg", { type: "image/jpeg" });
+                            resolve(file);
+                        },
+                        "blob",
+                        200,
+                        200
+                    );
+                });
+                image.then((file) => {
+                    console.log(file);
+                    const reader = new FileReader();
+                    reader.onload = function () {
+                        const img = new Image();
+                        img.src = reader.result as string;
+                        img.onload = function () {
+                            const imgInstance = new fabric.Image(img, {
+                                left: canvas!.getWidth() / 2,
+                                top: canvas!.getHeight() / 2,
+                                originX: 'center',
+                                originY: 'center',
+                            });
+                            objectToCanvasSize(imgInstance, 'contain');
+                            canvas!.add(imgInstance);
+                            canvas!.renderAll();
+                        }
+                    }
+                    reader.readAsDataURL(file);
+                })
             }
             reader.readAsDataURL(file);
         }
+    }
+
+    function insertFromClipboard () {
+        navigator.clipboard.read().then((data) => {
+            data.forEach(async (item) => {
+                // Valid is png, jpeg, jpg
+                if (item.types.includes('image/png') || item.types.includes('image/jpeg') || item.types.includes('image/jpg')) {
+                    item.getType('image/png').then((blob) => {
+                        if (!blob) return;
+                        // Resize before adding
+                        const image = new Promise<File>((resolve, reject) => {
+                            Resizer.imageFileResizer(
+                                blob,
+                                512,
+                                512,
+                                'JPEG',
+                                80,
+                                0,
+                                (uri: any) => {
+                                    const file = new File([uri], "image.jpg", { type: "image/jpeg" });
+                                    resolve(file);
+                                },
+                                "blob",
+                                200,
+                                200
+                            );
+                        });
+                        image.then((file) => {
+                            console.log(file);
+                            const reader = new FileReader();
+                            reader.onload = function () {
+                                const img = new Image();
+                                img.src = reader.result as string;
+                                img.onload = function () {
+                                    const imgInstance = new fabric.Image(img, {
+                                        left: canvas!.getWidth() / 2,
+                                        top: canvas!.getHeight() / 2,
+                                        originX: 'center',
+                                        originY: 'center',
+                                    });
+                                    objectToCanvasSize(imgInstance, 'contain');
+                                    canvas!.add(imgInstance);
+                                    canvas!.renderAll();
+                                }
+                            }
+                            reader.readAsDataURL(file);
+                        });
+                    });
+                }
+            });
+        });
     }
 
     return <>
@@ -658,6 +759,27 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                             onClick={() => { uploadImage() }}
                         >
                             <FontAwesomeIcon icon={faImage} />
+                        </button>
+
+                        <Tooltip
+                            id={`canvas-tooltip-from-clipboard-${id.current}`}
+                            place="top"
+                            border={'1px solid #2d3748'}
+                            style={{
+                                backgroundColor: 'white',
+                                color: 'black',
+                                borderRadius: '0.25rem',
+                            }}
+                            content="Insert from clipboard"
+                        />
+                        <button
+                            data-tooltip-id={`canvas-tooltip-from-clipboard-${id.current}`}
+                            className={classNames(
+                                "px-2 py-1 h-full border-l-2 border-gray-300 hover:bg-gray-100 text-sm",
+                            )}
+                            onClick={() => { insertFromClipboard() }}
+                        >
+                            <FontAwesomeIcon icon={faClipboard} />
                         </button>
 
                         <Tooltip

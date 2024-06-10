@@ -5,7 +5,7 @@ import './form-group.css';
 interface FormGroupProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 function FormGroup (props: FormGroupProps) {
-    const { ...restProps } = props;
+    const { className, ...restProps } = props;
 
     // Create children array
     const children = React.Children.toArray(props.children);
@@ -13,8 +13,8 @@ function FormGroup (props: FormGroupProps) {
     return (
         <div
             className={classNames(
-                'form-group mt-4 mb-4 container mx-auto flex flex-col items-stretch shadow-sm bg-white rounded-md border border-gray-200',
-                restProps.className
+                'relative form-group mt-4 mb-4 container mx-auto flex flex-col items-stretch shadow-sm bg-white rounded-md border border-gray-200',
+                className
             )}
             {...restProps}
         >
