@@ -2,7 +2,7 @@ import React, { ReactElement, RefAttributes, ForwardRefRenderFunction, forwardRe
 import classNames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignature } from "@fortawesome/pro-regular-svg-icons";
-import { fabric } from 'fabric';
+import fabric from 'fabric';
 import { v4 as uuidv4 } from "uuid";
 import { faDownload, faEmptySet, faPen, faTrash, faArrowsToDot, faCropSimple, faExpand, faImage, faMagnifyingGlassPlus, faMagnifyingGlassMinus, faClipboard } from "@fortawesome/pro-solid-svg-icons";
 import FlipIcon from '@mui/icons-material/Flip';
@@ -13,7 +13,7 @@ import QuestionMark from "./assets/canvas/QuestionMark.png";
 import ExclamationMark from "./assets/canvas/ExclamationMark.png";
 import { StaticImageData } from "next/image";
 import { Tooltip } from "react-tooltip";
-import Resizer from "@/helpers/resizer";
+import Resizer from "@/helpers/base/resizer";
 
 interface CanvasProps extends React.HTMLAttributes<HTMLDivElement> {
     value?: string
@@ -67,8 +67,10 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
         canvas.isDrawingMode = true;
 
         var brush = canvas.freeDrawingBrush;
-        brush.color = "#000000"
-        brush.width = 5;
+        if (brush) {
+            brush.color = "#000000"
+            brush.width = 5;
+        }
 
         // Set value timer based to prevent ctx error
         let timer: NodeJS.Timeout;
@@ -102,7 +104,7 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
             console.log(`Canvas value changed to ${props.value}`)
             // Use timer
             setTimeout(() => {
-                canvas.loadFromJSON(props.value === '' ? '{}' : props.value, () => {
+                canvas.loadFromJSON((props.value === '' ? '{}' : props.value) as any, () => {
                     canvas.renderAll();
                 });
             }, 0);
@@ -316,6 +318,7 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
         let dataURL = canvas!.toDataURL({
             format: 'png',
             quality: 1,
+            multiplier: 1,
         });
         let link = document.createElement('a');
         link.download = 'image.png';
@@ -340,7 +343,8 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
     }
 
     function addAsset (asset: string) {
-        fabric.Image.fromURL(asset, (img) => {
+        //@ts-ignore
+        fabric.FabricImage.fromURL(asset, (img) => {
             img.set({
                 // Center image
                 left: canvas!.getWidth() / 2,
@@ -360,7 +364,8 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
     function centerSelected () {
         let activeObject = canvas!.getActiveObject();
         if (activeObject) {
-            activeObject.center();
+            activeObject.setX(canvas!.getWidth() / 2);
+            activeObject.setY(canvas!.getHeight() / 2);
             canvas!.renderAll();
         }
     }
@@ -385,7 +390,8 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
 
         object.scaleToWidth(objectWidth * applyScale * scale);
         object.scaleToHeight(objectHeight * applyScale * scale);
-        object.center();
+        object.setX(canvas!.getWidth() / 2);
+        object.setY(canvas!.getHeight() / 2);
         canvas!.renderAll();
     }
 
@@ -411,12 +417,12 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
 
     function switchPencilWidth (width: number) {
         let brush = canvas!.freeDrawingBrush;
-        brush.width = width;
+        if(brush) brush.width = width;
     }
 
     function switchPencilColor (color: string) {
         let brush = canvas!.freeDrawingBrush;
-        brush.color = color;
+        if(brush) brush.color = color;
     }
 
     function uploadImage () {
@@ -892,9 +898,9 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                                 <button
                                     data-tooltip-id={`canvas-tooltip-arrow-${id.current}`}
                                     className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                                    onClick={() => { addAsset(Arrow) }}
+                                    onClick={() => { addAsset(Arrow.src) }}
                                 >
-                                    <img src={Arrow} className="h-4 w-4 object-contain" />
+                                    <img src={Arrow.src} className="h-4 w-4 object-contain" />
                                 </button>
 
                                 <Tooltip
@@ -911,9 +917,9 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                                 <button
                                     data-tooltip-id={`canvas-tooltip-check-${id.current}`}
                                     className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                                    onClick={() => { addAsset(Check) }}
+                                    onClick={() => { addAsset(Check.src) }}
                                 >
-                                    <img src={Check} className="h-4 w-4 object-contain" />
+                                    <img src={Check.src} className="h-4 w-4 object-contain" />
                                 </button>
 
                                 <Tooltip
@@ -930,9 +936,9 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                                 <button
                                     data-tooltip-id={`canvas-tooltip-deny-${id.current}`}
                                     className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                                    onClick={() => { addAsset(Deny) }}
+                                    onClick={() => { addAsset(Deny.src) }}
                                 >
-                                    <img src={Deny} className="h-4 w-4 object-contain" />
+                                    <img src={Deny.src} className="h-4 w-4 object-contain" />
                                 </button>
 
                                 <Tooltip
@@ -949,9 +955,9 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                                 <button
                                     data-tooltip-id={`canvas-tooltip-question-mark-${id.current}`}
                                     className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                                    onClick={() => { addAsset(QuestionMark) }}
+                                    onClick={() => { addAsset(QuestionMark.src) }}
                                 >
-                                    <img src={QuestionMark} className="h-4 w-4 object-contain" />
+                                    <img src={QuestionMark.src} className="h-4 w-4 object-contain" />
                                 </button>
 
                                 <Tooltip
@@ -968,9 +974,9 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                                 <button
                                     data-tooltip-id={`canvas-tooltip-exclamation-mark-${id.current}`}
                                     className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                                    onClick={() => { addAsset(ExclamationMark) }}
+                                    onClick={() => { addAsset(ExclamationMark.src) }}
                                 >
-                                    <img src={ExclamationMark} className="h-4 w-4 object-contain" />
+                                    <img src={ExclamationMark.src} className="h-4 w-4 object-contain" />
                                 </button>
                             </div>
                         }

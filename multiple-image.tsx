@@ -3,7 +3,7 @@ import axiosInstance from '@/helpers/base/axios'
 import { toast } from 'react-toastify'
 import Spinner from './spinner';
 import classNames from 'classnames';
-import Resizer from '@/helpers/resizer';
+import Resizer from '@/helpers/base/resizer';
 import { TrashIcon } from '@heroicons/react/20/solid';
 
 const MultipleImageSceneElement = function (props: { id: string, image: string, onChange: (image: string) => void }) {
