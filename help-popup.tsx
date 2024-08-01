@@ -10,9 +10,9 @@ import rehypeRaw from 'rehype-raw';
 
 interface Props {
     visible: boolean;
-    onHide: () => void;
     header: string;
     body: string;
+    onHide: () => void;
 }
 export const HelpPopup = (props: Props) => {
 
@@ -32,7 +32,7 @@ export const HelpPopup = (props: Props) => {
             onClick={props.onHide}
         >
             <div
-                className="bg-white rounded-md shadow-md overflow-hidden w-full max-w-2xl"
+                className="bg-white rounded-md shadow-md overflow-hidden w-full max-w-2xl max-h-2/3-screen flex flex-col"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex justify-between items-center bg-primary-1 text-primary-1-text p-4">
@@ -41,9 +41,10 @@ export const HelpPopup = (props: Props) => {
                         <FontAwesomeIcon icon={faTimes} className="w-4 h-4" />
                     </button>
                 </div>
-                <div className="m-4">
+                <div className="p-4 overflow-y-auto">
                     <Markdown
                         rehypePlugins={[rehypeRaw]}
+                        className={'markdown'}
                     >
                         {body}
                     </Markdown>

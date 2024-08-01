@@ -28,7 +28,7 @@ const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>((props, ref) =>
                 {props.values?.map((item, index) => (
                     <button
                         className={classNames(
-                            `px-4 py-2 text-sm font-medium w-full ${item.textWhite ? 'text-white' : 'text-gray-800'}`,
+                            `relative px-4 py-2 text-sm font-medium w-full ${item.textWhite ? 'text-white' : 'text-gray-800'}`,
                             `aspect-1`,
                             `border-2 border-gray-300 rounded-md`,
                             `flex flex-col items-center justify-center`,
@@ -39,8 +39,15 @@ const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>((props, ref) =>
                         style={{ backgroundColor: item.color }}
                         onClick={() => { handleColorChange(item.value) }}
                     >
+                        {item.textureFile && (
+                            <img
+                                src={`/color-picker/${item.textureFile}`}
+                                className='absolute inset-0 w-full h-full object-cover z-10'
+                                alt={`${item.name} texture`}
+                            />
+                        )}
                         <div
-                            className='flex flex-col items-center justify-center'
+                            className='flex flex-col items-center justify-center z-20'
                         >
                             <span
                                 className='text-lg'

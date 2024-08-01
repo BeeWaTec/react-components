@@ -2,7 +2,6 @@ import React, { forwardRef, useEffect, useRef } from "react";
 import classNames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useState from 'react-usestateref'
-import { useDraggable } from "react-use-draggable-scroll";
 import { faPlus, faTrashAlt } from "@fortawesome/pro-solid-svg-icons";
 import Canvas, { CanvasType } from '@/components/base/canvas';
 

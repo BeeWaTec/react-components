@@ -1,19 +1,21 @@
 import classNames from "classnames";
-import React from "react";
+import React, { useEffect } from "react";
 import TextArea from "./text-area";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestion } from "@fortawesome/pro-solid-svg-icons";
 import HelpPopup from "./help-popup";
+import axios from "axios";
 
 interface FormGroupRowProps extends React.HTMLAttributes<HTMLDivElement> {
     seperator?: boolean;
     dynamicHeight?: boolean;
-    help?: { title: string, body: string };
+    help?: { title: string, body?: string, bodyId?: string };
 }
 const FormGroupRow: React.FC<FormGroupRowProps> = React.forwardRef<HTMLDivElement, FormGroupRowProps>((props, ref) => {
     const { seperator = true, dynamicHeight, className, ...restProps } = props;
 
     const [helpVisible, setHelpVisible] = React.useState(false);
+    const [helpBody, setHelpBody] = React.useState<string | undefined>(props.help?.body);
 
     // Create children array
     const children = React.Children.toArray(props.children);
@@ -28,6 +30,24 @@ const FormGroupRow: React.FC<FormGroupRowProps> = React.forwardRef<HTMLDivElemen
         return false;
     });
 
+    // Check if help has bodyId instead of body -> Download body from /markdown/:id
+    function getHelpBody () {
+        if (props.help && props.help.bodyId && !props.help.body) {
+            axios.get(`/markdown/${props.help.bodyId}.md`).then((res) => {
+                setHelpBody(res.data);
+            }).catch((err) => {
+                // Retry after 5s
+                setTimeout(() => {
+                    getHelpBody();
+                }, 1000);
+            });
+        }
+    }
+    useEffect(() => {
+        if (props.help && !props.help.body && props.help.bodyId) {
+            getHelpBody();
+        }
+    }, []);
 
     return (
         <div
@@ -41,15 +61,25 @@ const FormGroupRow: React.FC<FormGroupRowProps> = React.forwardRef<HTMLDivElemen
                 >
                     <FontAwesomeIcon
                         icon={faQuestion}
-                        className='w-4 h-4 border border-gray-200 rounded-full p-1 hover:bg-gray-100 cursor-pointer'
-                        onClick={() => setHelpVisible(true)}
+                        className={classNames(
+                            "w-4 h-4 border border-gray-200 rounded-full p-1 hover:bg-gray-100",
+                            { 'cursor-pointer': typeof helpBody === 'string' },
+                            { 'cursor-not-allowed': !helpBody },
+                        )}
+                        onClick={() => {
+                            if (helpBody) {
+                                setHelpVisible(true);
+                            }
+                        }}
                     />
-                    <HelpPopup
-                        visible={helpVisible}
-                        onHide={() => setHelpVisible(false)}
-                        header={props.help.title}
-                        body={props.help.body}
-                    />
+                    {helpBody && (
+                        <HelpPopup
+                            visible={helpVisible}
+                            onHide={() => setHelpVisible(false)}
+                            header={props.help.title}
+                            body={helpBody}
+                        />
+                    )}
                 </div>
             )}
             <div

@@ -3,7 +3,6 @@ import { Combobox } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import classNames from 'classnames'
 import axios, { AxiosInstance } from 'axios'
-import { Float } from '@headlessui-float/react'
 
 interface ComboFieldProps {
     className?: string,
@@ -211,6 +210,12 @@ export default function ComboField ({ className, enableResetButton = false, ...p
                 value={values?.find((value) => {
                     return value.value === selected
                 }) || null}
+                onReset={() => {
+                    setSelected(null)
+                    if (props.onChange) {
+                        props.onChange(null)
+                    }
+                }}
                 onChange={(selected: any) => {
                     if (selected) {
                         setSelected(selected.value)
@@ -221,7 +226,7 @@ export default function ComboField ({ className, enableResetButton = false, ...p
                     else {
                         setSelected(null)
                         if (props.onChange) {
-                            props.onChange(selected.value)
+                            props.onChange(selected?.value || null)
                         }
                     }
                 }}
