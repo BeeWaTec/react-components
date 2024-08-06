@@ -2,7 +2,7 @@ import React, { ReactElement, RefAttributes, ForwardRefRenderFunction, forwardRe
 import classNames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignature } from "@fortawesome/pro-regular-svg-icons";
-import { fabric } from 'fabric'
+import * as fabric from 'fabric'
 import { v4 as uuidv4 } from "uuid";
 import { faDownload, faEmptySet, faPen, faTrash, faArrowsToDot, faCropSimple, faExpand, faImage, faMagnifyingGlassPlus, faMagnifyingGlassMinus, faClipboard } from "@fortawesome/pro-solid-svg-icons";
 import FlipIcon from '@mui/icons-material/Flip';
@@ -229,6 +229,8 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                     let json = JSON.stringify(canvas!.toJSON());
                     if (props.onCanvasChange) props.onCanvasChange(json);
                 }, 0));
+                // Render
+                canvas!.renderAll();
             });
             canvas.on('object:added', (e) => {
                 // Clear timer
@@ -239,6 +241,8 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                     let json = JSON.stringify(canvas!.toJSON());
                     if (props.onCanvasChange) props.onCanvasChange(json);
                 }, 0));
+                // Render
+                canvas!.renderAll();
             });
             canvas.on('object:removed', (e) => {
                 // Clear timer
@@ -249,6 +253,8 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                     let json = JSON.stringify(canvas!.toJSON());
                     if (props.onCanvasChange) props.onCanvasChange(json);
                 }, 0));
+                // Render
+                canvas!.renderAll();
             });
         }
 
@@ -342,9 +348,11 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
         }
     }
 
-    function addAsset (asset: string) {
+    async function addAsset (asset: string) {
+        console.log(`Canvas - ${id.current} - Adding asset: ${asset}`)
         //@ts-ignore
-        fabric.FabricImage.fromURL(asset, (img) => {
+        /*fabric.FabricImage.fromURL(asset, (img) => {
+            console.log(`Canvas - ${id.current} - Asset added: ${asset}`)
             img.set({
                 // Center image
                 left: canvas!.getWidth() / 2,
@@ -358,7 +366,22 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
             canvas!.add(img);
             canvas!.setActiveObject(img);
             canvas!.renderAll();
-        });
+        })*/
+       const img = await fabric.FabricImage.fromURL(asset);
+       console.log(`Canvas - ${id.current} - Asset added: ${asset}`)
+            img.set({
+                // Center image
+                left: canvas!.getWidth() / 2,
+                top: canvas!.getHeight() / 2,
+                originX: 'center',
+                originY: 'center',
+            });
+
+            objectToCanvasSize(img, 'contain', 0.5);
+
+            canvas!.add(img);
+            canvas!.setActiveObject(img);
+            canvas!.renderAll();
     }
 
     function centerSelected () {
@@ -898,9 +921,9 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                                 <button
                                     data-tooltip-id={`canvas-tooltip-arrow-${id.current}`}
                                     className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                                    onClick={() => { addAsset(Arrow.src) }}
+                                    onClick={() => { addAsset(Arrow) }}
                                 >
-                                    <img src={Arrow.src} className="h-4 w-4 object-contain" />
+                                    <img src={Arrow} className="h-4 w-4 object-contain" alt="" />
                                 </button>
 
                                 <Tooltip
@@ -917,9 +940,9 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                                 <button
                                     data-tooltip-id={`canvas-tooltip-check-${id.current}`}
                                     className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                                    onClick={() => { addAsset(Check.src) }}
+                                    onClick={() => { addAsset(Check) }}
                                 >
-                                    <img src={Check.src} className="h-4 w-4 object-contain" />
+                                    <img src={Check} className="h-4 w-4 object-contain" alt="" />
                                 </button>
 
                                 <Tooltip
@@ -936,9 +959,9 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                                 <button
                                     data-tooltip-id={`canvas-tooltip-deny-${id.current}`}
                                     className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                                    onClick={() => { addAsset(Deny.src) }}
+                                    onClick={() => { addAsset(Deny) }}
                                 >
-                                    <img src={Deny.src} className="h-4 w-4 object-contain" />
+                                    <img src={Deny} className="h-4 w-4 object-contain" alt="" />
                                 </button>
 
                                 <Tooltip
@@ -955,9 +978,9 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                                 <button
                                     data-tooltip-id={`canvas-tooltip-question-mark-${id.current}`}
                                     className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                                    onClick={() => { addAsset(QuestionMark.src) }}
+                                    onClick={() => { addAsset(QuestionMark) }}
                                 >
-                                    <img src={QuestionMark.src} className="h-4 w-4 object-contain" />
+                                    <img src={QuestionMark} className="h-4 w-4 object-contain" alt="" />
                                 </button>
 
                                 <Tooltip
@@ -974,9 +997,9 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                                 <button
                                     data-tooltip-id={`canvas-tooltip-exclamation-mark-${id.current}`}
                                     className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
-                                    onClick={() => { addAsset(ExclamationMark.src) }}
+                                    onClick={() => { addAsset(ExclamationMark) }}
                                 >
-                                    <img src={ExclamationMark.src} className="h-4 w-4 object-contain" />
+                                    <img src={ExclamationMark} className="h-4 w-4 object-contain" alt="" />
                                 </button>
                             </div>
                         }
