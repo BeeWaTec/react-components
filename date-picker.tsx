@@ -1,7 +1,9 @@
 import React, { ReactElement, RefAttributes, ForwardRefRenderFunction, forwardRef } from "react";
-import ReactDatePicker, { ReactDatePickerCustomHeaderProps } from "react-datepicker";
+import ReactDatePicker from "react-datepicker";
 
-interface CustomDatePickerProps extends ReactDatePickerCustomHeaderProps {
+interface CustomDatePickerProps {
+    selected: Date | null;
+    onChange: (date: Date | null) => void;
 }
 const DatePicker= forwardRef<HTMLInputElement, CustomDatePickerProps>((
     props,

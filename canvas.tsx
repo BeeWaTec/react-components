@@ -2,7 +2,7 @@ import React, { ReactElement, RefAttributes, ForwardRefRenderFunction, forwardRe
 import classNames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignature } from "@fortawesome/pro-regular-svg-icons";
-import * as fabric from 'fabric'
+import * as fabric from 'fabric';
 import { v4 as uuidv4 } from "uuid";
 import { faDownload, faEmptySet, faPen, faTrash, faArrowsToDot, faCropSimple, faExpand, faImage, faMagnifyingGlassPlus, faMagnifyingGlassMinus, faClipboard } from "@fortawesome/pro-solid-svg-icons";
 import FlipIcon from '@mui/icons-material/Flip';
