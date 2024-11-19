@@ -145,7 +145,6 @@ const CompartmentCard: React.FC<{
                     className="relative text-xl font-bold w-full shadow-md h-12 flex flex-row flex-nowrap items-center justify-center"
                 >
                     {item.colors.length > 0 && (
-
                         <span
                             className="relative z-20 flex-grow flex items-center justify-center h-full p-3 "
                             style={{
@@ -186,8 +185,8 @@ const CompartmentCard: React.FC<{
                     className="relative text-xl font-bold w-full shadow-md h-4 flex flex-row flex-nowrap items-center justify-center"
                 >
                     {item.colors.map(({ name, rgba: color, textureFile, textColor }) => (
-
                         <span
+                            key={name}
                             className="relative z-20 flex-grow flex items-center justify-center h-full"
                             style={{
                                 color: textColor || (isDarkColor(color) ? "white" : "black")

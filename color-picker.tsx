@@ -27,6 +27,7 @@ const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>((props, ref) =>
             >
                 {props.values?.map((item, index) => (
                     <button
+                        key={index}
                         className={classNames(
                             `relative px-4 py-2 text-sm font-medium w-full ${item.textWhite ? 'text-white' : 'text-gray-800'}`,
                             `aspect-1`,
