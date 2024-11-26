@@ -1,14 +1,15 @@
-import { IconName, IconPrefix, IconProp } from "@fortawesome/fontawesome-svg-core";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import * as FaIcons from "react-icons/fa";
 import classNames from "classnames";
 import React from "react";
 
 interface FormGroupPrefixTextProps extends React.HTMLAttributes<HTMLDivElement> {
     text?: string;
-    icon?: IconProp;
+    icon?: string;
 }
 function FormGroupPrefixText (props: FormGroupPrefixTextProps) {
-    const { className, ...restProps } = props;
+    const { className, icon, ...restProps } = props;
+
+    const IComponent = FaIcons[icon as keyof typeof FaIcons]
 
     return (
         <div
@@ -19,8 +20,7 @@ function FormGroupPrefixText (props: FormGroupPrefixTextProps) {
             {...restProps}
         >
             {props.icon && (
-                <FontAwesomeIcon
-                    icon={props.icon}
+                <IComponent
                     className='px-2 text-lg text-gray-800'
                 />
             )}

@@ -1,10 +1,9 @@
 import classNames from "classnames";
 import React, { useEffect } from "react";
 import TextArea from "./text-area";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faQuestion } from "@fortawesome/pro-solid-svg-icons";
 import HelpPopup from "./help-popup";
 import axios from "axios";
+import { FaQuestion } from "react-icons/fa";
 
 interface FormGroupRowProps extends React.HTMLAttributes<HTMLDivElement> {
     seperator?: boolean;
@@ -59,8 +58,7 @@ const FormGroupRow: React.FC<FormGroupRowProps> = React.forwardRef<HTMLDivElemen
                     className='absolute left-0 top-0 w-10 h-10 flex items-center justify-center text-gray-800'
                     style={{ marginLeft: '-2.5rem' }}
                 >
-                    <FontAwesomeIcon
-                        icon={faQuestion}
+                    <FaQuestion
                         className={classNames(
                             "w-4 h-4 border border-gray-200 rounded-full p-1 hover:bg-gray-100",
                             { 'cursor-pointer': typeof helpBody === 'string' },

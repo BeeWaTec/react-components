@@ -1,11 +1,10 @@
 import React, { forwardRef, useEffect, useRef } from "react";
 import classNames from "classnames";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useState from 'react-usestateref'
-import { faPlus, faTrashAlt } from "@fortawesome/pro-solid-svg-icons";
 import Canvas, { CanvasType } from '@/components/base/canvas';
 
 import './multiple-canvas.module.css';
+import { FaPlus, FaTrashAlt } from "react-icons/fa";
 
 interface MultipleCanvasProps {
     value?: string[]
@@ -80,7 +79,7 @@ const MultipleCanvas = forwardRef<HTMLDivElement, MultipleCanvasProps>((props, r
                             setCanvasDataIndex(currentIndex);
                         }}
                     >
-                        <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
+                        <FaPlus className="w-4 h-4" />
                     </button>
                     <button
                         className={classNames(
@@ -102,7 +101,7 @@ const MultipleCanvas = forwardRef<HTMLDivElement, MultipleCanvasProps>((props, r
                             }
                         }}
                     >
-                        <FontAwesomeIcon icon={faTrashAlt} className="w-4 h-4 transform rotate-45" />
+                        <FaTrashAlt className="w-4 h-4 transform rotate-45" />
                     </button>
                 </div>
             </div>

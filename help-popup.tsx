@@ -2,9 +2,8 @@
     A component that displays a help popup - Also a modal with header and body (defined by Markdown)
 */
 
-import { faTimes } from '@fortawesome/pro-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classNames from 'classnames';
+import { FaTimes } from 'react-icons/fa';
 import Markdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw';
 
@@ -38,7 +37,7 @@ export const HelpPopup = (props: Props) => {
                 <div className="flex justify-between items-center bg-primary-1 text-primary-1-text p-4">
                     <span className="text-lg font-semibold">{props.header}</span>
                     <button onClick={props.onHide}>
-                        <FontAwesomeIcon icon={faTimes} className="w-4 h-4" />
+                        <FaTimes className="w-4 h-4" />
                     </button>
                 </div>
                 <div className="p-4 overflow-y-auto">
