@@ -35,7 +35,6 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
     const { className, ...restProps } = props;
 
     const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
-    const [drawingMode, setDrawingMode] = useState<boolean>(false);
     const [showDropEvent, setShowDropEvent] = useState<boolean>(false);
     const [fullscreen, setFullscreen] = useState<boolean>(false);
     const [zoom, setZoom] = useState<number>(props.init_zoom || 1);
@@ -64,7 +63,7 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
         }
         resizeCanvas();
 
-        canvas.isDrawingMode = true;
+        canvas.isDrawingMode = false;
 
         var brush = canvas.freeDrawingBrush;
         if (brush) {
@@ -110,12 +109,6 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
             }, 0);
         }
     }, [props.value]);
-
-    useEffect(() => {
-        if (canvas) {
-            canvas.isDrawingMode = drawingMode;
-        }
-    }, [canvas, drawingMode]);
 
     /* Remove selected element on "del" key press */
     useEffect(() => {
@@ -582,146 +575,121 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                     <div
                         className="flex flex-row justify-start items-center w-full h-8 border-b-2 border-gray-300"
                     >
-                        <Tooltip
-                            id={`canvas-tooltip-drawing-mode-${id.current}`}
-                            place="top"
-                            border={'1px solid #2d3748'}
-                            style={{
-                                backgroundColor: 'white',
-                                color: 'black',
-                                borderRadius: '0.25rem',
-                            }}
-                            content="Drawing mode"
-                        />
-                        <button
-                            data-tooltip-id={`canvas-tooltip-drawing-mode-${id.current}`}
-                            className={classNames(
-                                "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 text-sm",
-                                {
-                                    "bg-primary-1 text-primary-1-text hover:bg-primary-1-hover": drawingMode,
-                                }
-                            )}
-                            onClick={() => { setDrawingMode(!drawingMode) }}
-                        >
-                            <FaPen/>
-                        </button>
-                        {!drawingMode &&
-                            <>
-                                <Tooltip
-                                    id={`canvas-tooltip-delete-selected-${id.current}`}
-                                    place="top"
-                                    border={'1px solid #2d3748'}
-                                    style={{
-                                        backgroundColor: 'white',
-                                        color: 'black',
-                                        borderRadius: '0.25rem',
-                                    }}
-                                    content="Delete selected"
-                                />
-                                <button
-                                    data-tooltip-id={`canvas-tooltip-delete-selected-${id.current}`}
-                                    className={classNames(
-                                        "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
-                                    )}
-                                    disabled={drawingMode || !canvas}
-                                    onClick={() => { deleteSelected() }}
-                                >
-                                    <FaTrash/>
-                                </button>
+                        <>
+                            <Tooltip
+                                id={`canvas-tooltip-delete-selected-${id.current}`}
+                                place="top"
+                                border={'1px solid #2d3748'}
+                                style={{
+                                    backgroundColor: 'white',
+                                    color: 'black',
+                                    borderRadius: '0.25rem',
+                                }}
+                                content="Delete selected"
+                            />
+                            <button
+                                data-tooltip-id={`canvas-tooltip-delete-selected-${id.current}`}
+                                className={classNames(
+                                    "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
+                                )}
+                                disabled={!canvas}
+                                onClick={() => { deleteSelected() }}
+                            >
+                                <FaTrash/>
+                            </button>
 
-                                {/* Flip vertical */}
-                                <Tooltip
-                                    id={`canvas-tooltip-flip-vertical-${id.current}`}
-                                    place="top"
-                                    border={'1px solid #2d3748'}
-                                    style={{
-                                        backgroundColor: 'white',
-                                        color: 'black',
-                                        borderRadius: '0.25rem',
-                                    }}
-                                    content="Flip Vertical"
-                                />
-                                <button
-                                    data-tooltip-id={`canvas-tooltip-flip-vertical-${id.current}`}
-                                    className={classNames(
-                                        "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
-                                    )}
-                                    disabled={drawingMode || !canvas}
-                                    onClick={() => { flipVertical() }}
-                                >
-                                    <FlipIcon style={{ transform: "rotate(90deg)" }} className="p-1" />
-                                </button>
+                            {/* Flip vertical */}
+                            <Tooltip
+                                id={`canvas-tooltip-flip-vertical-${id.current}`}
+                                place="top"
+                                border={'1px solid #2d3748'}
+                                style={{
+                                    backgroundColor: 'white',
+                                    color: 'black',
+                                    borderRadius: '0.25rem',
+                                }}
+                                content="Flip Vertical"
+                            />
+                            <button
+                                data-tooltip-id={`canvas-tooltip-flip-vertical-${id.current}`}
+                                className={classNames(
+                                    "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
+                                )}
+                                disabled={!canvas}
+                                onClick={() => { flipVertical() }}
+                            >
+                                <FlipIcon style={{ transform: "rotate(90deg)" }} className="p-1" />
+                            </button>
 
-                                {/* Flip horizontal */}
-                                <Tooltip
-                                    id={`canvas-tooltip-flip-horizontal-${id.current}`}
-                                    place="top"
-                                    border={'1px solid #2d3748'}
-                                    style={{
-                                        backgroundColor: 'white',
-                                        color: 'black',
-                                        borderRadius: '0.25rem',
-                                    }}
-                                    content="Flip Horizontal"
-                                />
-                                <button
-                                    data-tooltip-id={`canvas-tooltip-flip-horizontal-${id.current}`}
-                                    className={classNames(
-                                        "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
-                                    )}
-                                    disabled={drawingMode || !canvas}
-                                    onClick={() => { flipHorizontal() }}
-                                >
-                                    <FlipIcon className="p-1" />
-                                </button>
+                            {/* Flip horizontal */}
+                            <Tooltip
+                                id={`canvas-tooltip-flip-horizontal-${id.current}`}
+                                place="top"
+                                border={'1px solid #2d3748'}
+                                style={{
+                                    backgroundColor: 'white',
+                                    color: 'black',
+                                    borderRadius: '0.25rem',
+                                }}
+                                content="Flip Horizontal"
+                            />
+                            <button
+                                data-tooltip-id={`canvas-tooltip-flip-horizontal-${id.current}`}
+                                className={classNames(
+                                    "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
+                                )}
+                                disabled={!canvas}
+                                onClick={() => { flipHorizontal() }}
+                            >
+                                <FlipIcon className="p-1" />
+                            </button>
 
-                                {/* Center */}
-                                <Tooltip
-                                    id={`canvas-tooltip-center-${id.current}`}
-                                    place="top"
-                                    border={'1px solid #2d3748'}
-                                    style={{
-                                        backgroundColor: 'white',
-                                        color: 'black',
-                                        borderRadius: '0.25rem',
-                                    }}
-                                    content="Center"
-                                />
-                                <button
-                                    data-tooltip-id={`canvas-tooltip-center-${id.current}`}
-                                    className={classNames(
-                                        "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
-                                    )}
-                                    disabled={drawingMode || !canvas}
-                                    onClick={() => { centerSelected() }}
-                                >
-                                    <FaArrowsToDot/>
-                                </button>
+                            {/* Center */}
+                            <Tooltip
+                                id={`canvas-tooltip-center-${id.current}`}
+                                place="top"
+                                border={'1px solid #2d3748'}
+                                style={{
+                                    backgroundColor: 'white',
+                                    color: 'black',
+                                    borderRadius: '0.25rem',
+                                }}
+                                content="Center"
+                            />
+                            <button
+                                data-tooltip-id={`canvas-tooltip-center-${id.current}`}
+                                className={classNames(
+                                    "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
+                                )}
+                                disabled={!canvas}
+                                onClick={() => { centerSelected() }}
+                            >
+                                <FaArrowsToDot/>
+                            </button>
 
-                                {/* To canvas size */}
-                                <Tooltip
-                                    id={`canvas-tooltip-contain-${id.current}`}
-                                    place="top"
-                                    border={'1px solid #2d3748'}
-                                    style={{
-                                        backgroundColor: 'white',
-                                        color: 'black',
-                                        borderRadius: '0.25rem',
-                                    }}
-                                    content="Contain"
-                                />
-                                <button
-                                    data-tooltip-id={`canvas-tooltip-contain-${id.current}`}
-                                    className={classNames(
-                                        "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
-                                    )}
-                                    disabled={drawingMode || !canvas}
-                                    onClick={() => { selectedToCanvasSize('contain') }}
-                                >
-                                    <FaCropSimple/>
-                                </button>
-                            </>
-                        }
+                            {/* To canvas size */}
+                            <Tooltip
+                                id={`canvas-tooltip-contain-${id.current}`}
+                                place="top"
+                                border={'1px solid #2d3748'}
+                                style={{
+                                    backgroundColor: 'white',
+                                    color: 'black',
+                                    borderRadius: '0.25rem',
+                                }}
+                                content="Contain"
+                            />
+                            <button
+                                data-tooltip-id={`canvas-tooltip-contain-${id.current}`}
+                                className={classNames(
+                                    "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
+                                )}
+                                disabled={!canvas}
+                                onClick={() => { selectedToCanvasSize('contain') }}
+                            >
+                                <FaCropSimple/>
+                            </button>
+                        </>
 
                         <div className="flex-grow min-w-[10px]"></div>
 
@@ -884,7 +852,6 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                     <div
                         className="flex flex-row justify-start items-center w-full h-8 border-b-2 border-gray-300"
                     >
-                        {!drawingMode &&
                             <div
                                 className="flex flex-row items-center"
                             >
@@ -1002,259 +969,6 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                                     <img src={ExclamationMark} className="h-4 w-4 object-contain" alt="" />
                                 </button>
                             </div>
-                        }
-                        {drawingMode &&
-                            <>
-                                <div
-                                    className="flex flex-row items-center"
-                                >
-                                    <Tooltip
-                                        id={`canvas-tooltip-pencil-1-${id.current}`}
-                                        place="top"
-                                        border={'1px solid #2d3748'}
-                                        style={{
-                                            backgroundColor: 'white',
-                                            color: 'black',
-                                            borderRadius: '0.25rem',
-                                        }}
-                                        content="Pencil width 1"
-                                    />
-                                    <button
-                                        data-tooltip-id={`canvas-tooltip-pencil-1-${id.current}`}
-                                        className={classNames(
-                                            "px-2 py-1 border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
-                                        )}
-                                        disabled={!drawingMode || !canvas}
-                                        onClick={() => { switchPencilWidth(5) }}
-                                    >
-                                        <div
-                                            className={classNames(
-                                                "w-2 h-2 rounded-full bg-black",
-                                            )}
-                                        />
-                                    </button>
-
-                                    <Tooltip
-                                        id={`canvas-tooltip-pencil-10-${id.current}`}
-                                        place="top"
-                                        border={'1px solid #2d3748'}
-                                        style={{
-                                            backgroundColor: 'white',
-                                            color: 'black',
-                                            borderRadius: '0.25rem',
-                                        }}
-                                        content="Pencil width 10"
-                                    />
-                                    <button
-                                        data-tooltip-id={`canvas-tooltip-pencil-10-${id.current}`}
-                                        className={classNames(
-                                            "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
-                                        )}
-                                        disabled={!drawingMode || !canvas}
-                                        onClick={() => { switchPencilWidth(10) }}
-                                    >
-                                        <div
-                                            className={classNames(
-                                                "w-4 h-4 rounded-full bg-black",
-                                            )}
-                                        />
-                                    </button>
-
-                                    <Tooltip
-                                        id={`canvas-tooltip-pencil-15-${id.current}`}
-                                        place="top"
-                                        border={'1px solid #2d3748'}
-                                        style={{
-                                            backgroundColor: 'white',
-                                            color: 'black',
-                                            borderRadius: '0.25rem',
-                                        }}
-                                        content="Pencil width 15"
-                                    />
-                                    <button
-                                        data-tooltip-id={`canvas-tooltip-pencil-15-${id.current}`}
-                                        className={classNames(
-                                            "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
-                                        )}
-                                        disabled={!drawingMode || !canvas}
-                                        onClick={() => { switchPencilWidth(15) }}
-                                    >
-                                        <div
-                                            className={classNames(
-                                                "w-6 h-6 rounded-full bg-black",
-                                            )}
-                                        />
-                                    </button>
-                                </div>
-
-                                <div className="flex-grow min-w-[10px]"></div>
-
-                                <div
-                                    className="flex flex-row items-center"
-                                >
-                                    <Tooltip
-                                        id={`canvas-tooltip-black-${id.current}`}
-                                        place="top"
-                                        border={'1px solid #2d3748'}
-                                        style={{
-                                            backgroundColor: 'white',
-                                            color: 'black',
-                                            borderRadius: '0.25rem',
-                                        }}
-                                        content="Black"
-                                    />
-                                    <button
-                                        data-tooltip-id={`canvas-tooltip-black-${id.current}`}
-                                        className={classNames(
-                                            "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
-                                        )}
-                                        disabled={!drawingMode || !canvas}
-                                        onClick={() => { switchPencilColor("#000000") }}
-                                    >
-                                        <div
-                                            className={classNames(
-                                                "w-4 h-4 rounded-full bg-black",
-                                            )}
-                                        />
-                                    </button>
-
-                                    <Tooltip
-                                        id={`canvas-tooltip-white-${id.current}`}
-                                        place="top"
-                                        border={'1px solid #2d3748'}
-                                        style={{
-                                            backgroundColor: 'white',
-                                            color: 'black',
-                                            borderRadius: '0.25rem',
-                                        }}
-                                        content="White"
-                                    />
-                                    <button
-                                        data-tooltip-id={`canvas-tooltip-white-${id.current}`}
-                                        className={classNames(
-                                            "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
-                                        )}
-                                        disabled={!drawingMode || !canvas}
-                                        onClick={() => { switchPencilColor("#ffffff") }}
-                                    >
-                                        <div
-                                            className={classNames(
-                                                "w-4 h-4 rounded-full bg-white border-2 border-gray-300",
-                                            )}
-                                        />
-                                    </button>
-                                    {/* Default colors - Warn, Success, Primary, Danger */}
-                                    <div
-                                        className="flex flex-row items-center"
-                                    >
-
-                                        <Tooltip
-                                            id={`canvas-tooltip-warning-${id.current}`}
-                                            place="top"
-                                            border={'1px solid #2d3748'}
-                                            style={{
-                                                backgroundColor: 'white',
-                                                color: 'black',
-                                                borderRadius: '0.25rem',
-                                            }}
-                                            content="Warning"
-                                        />
-                                        <button
-                                            data-tooltip-id={`canvas-tooltip-warning-${id.current}`}
-                                            className={classNames(
-                                                "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
-                                            )}
-                                            disabled={!drawingMode || !canvas}
-                                            onClick={() => { switchPencilColor("#f59e0b") }}
-                                        >
-                                            <div
-                                                className={classNames(
-                                                    "w-4 h-4 rounded-full bg-[#f59e0b]",
-                                                )}
-                                            />
-                                        </button>
-
-                                        <Tooltip
-                                            id={`canvas-tooltip-danger-${id.current}`}
-                                            place="top"
-                                            border={'1px solid #2d3748'}
-                                            style={{
-                                                backgroundColor: 'white',
-                                                color: 'black',
-                                                borderRadius: '0.25rem',
-                                            }}
-                                            content="Danger"
-                                        />
-                                        <button
-                                            data-tooltip-id={`canvas-tooltip-danger-${id.current}`}
-                                            className={classNames(
-                                                "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
-                                            )}
-                                            disabled={!drawingMode || !canvas}
-                                            onClick={() => { switchPencilColor("#d9463e") }}
-                                        >
-                                            <div
-                                                className={classNames(
-                                                    "w-4 h-4 rounded-full bg-[#d9463e]",
-                                                )}
-                                            />
-                                        </button>
-
-                                        <Tooltip
-                                            id={`canvas-tooltip-success-${id.current}`}
-                                            place="top"
-                                            border={'1px solid #2d3748'}
-                                            style={{
-                                                backgroundColor: 'white',
-                                                color: 'black',
-                                                borderRadius: '0.25rem',
-                                            }}
-                                            content="Success"
-                                        />
-                                        <button
-                                            data-tooltip-id={`canvas-tooltip-success-${id.current}`}
-                                            className={classNames(
-                                                "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
-                                            )}
-                                            disabled={!drawingMode || !canvas}
-                                            onClick={() => { switchPencilColor("#2da44e") }}
-                                        >
-                                            <div
-                                                className={classNames(
-                                                    "w-4 h-4 rounded-full bg-[#2da44e]",
-                                                )}
-                                            />
-                                        </button>
-
-                                        <Tooltip
-                                            id={`canvas-tooltip-primary-${id.current}`}
-                                            place="top"
-                                            border={'1px solid #2d3748'}
-                                            style={{
-                                                backgroundColor: 'white',
-                                                color: 'black',
-                                                borderRadius: '0.25rem',
-                                            }}
-                                            content="Primary"
-                                        />
-                                        <button
-                                            data-tooltip-id={`canvas-tooltip-primary-${id.current}`}
-                                            className={classNames(
-                                                "px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500 text-sm",
-                                            )}
-                                            disabled={!drawingMode || !canvas}
-                                            onClick={() => { switchPencilColor("#3b82f6") }}
-                                        >
-                                            <div
-                                                className={classNames(
-                                                    "w-4 h-4 rounded-full bg-[#3b82f6]",
-                                                )}
-                                            />
-                                        </button>
-                                    </div>
-                                </div>
-                            </>
-                        }
                     </div>
 
                     {/* Canvas */}
