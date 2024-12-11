@@ -1,19 +1,21 @@
-import React, { ReactElement, RefAttributes, ForwardRefRenderFunction, forwardRef, useState, useEffect, useImperativeHandle, Ref, useRef } from "react";
 import classNames from "classnames";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSignature } from "@fortawesome/pro-regular-svg-icons";
-import * as fabric from 'fabric';
+import * as fabric from "fabric";
+import { StaticImageData } from "next/image";
+import React, { forwardRef, ForwardRefRenderFunction, ReactElement, Ref, RefAttributes, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { FaClipboard, FaDownload, FaImage, FaPen, FaSignature, FaTrash } from "react-icons/fa";
+import { FaArrowsToDot, FaCropSimple, FaExpand, FaMagnifyingGlassMinus, FaMagnifyingGlassPlus } from "react-icons/fa6";
+import { PiEmpty } from "react-icons/pi";
+import { Tooltip } from "react-tooltip";
 import { v4 as uuidv4 } from "uuid";
-import { faDownload, faEmptySet, faPen, faTrash, faArrowsToDot, faCropSimple, faExpand, faImage, faMagnifyingGlassPlus, faMagnifyingGlassMinus, faClipboard } from "@fortawesome/pro-solid-svg-icons";
-import FlipIcon from '@mui/icons-material/Flip';
+
+import Resizer from "@/helpers/base/resizer";
+import FlipIcon from "@mui/icons-material/Flip";
+
 import Arrow from "./assets/canvas/Arrow.png";
 import Check from "./assets/canvas/Check.png";
 import Deny from "./assets/canvas/Deny.png";
-import QuestionMark from "./assets/canvas/QuestionMark.png";
 import ExclamationMark from "./assets/canvas/ExclamationMark.png";
-import { StaticImageData } from "next/image";
-import { Tooltip } from "react-tooltip";
-import Resizer from "@/helpers/base/resizer";
+import QuestionMark from "./assets/canvas/QuestionMark.png";
 
 interface CanvasProps extends React.HTMLAttributes<HTMLDivElement> {
     value?: string
@@ -603,7 +605,7 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                             )}
                             onClick={() => { setDrawingMode(!drawingMode) }}
                         >
-                            <FontAwesomeIcon icon={faPen} />
+                            <FaPen />
                         </button>
                         {!drawingMode &&
                             <>
@@ -626,7 +628,7 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                                     disabled={drawingMode || !canvas}
                                     onClick={() => { deleteSelected() }}
                                 >
-                                    <FontAwesomeIcon icon={faTrash} />
+                                    <FaTrash />
                                 </button>
 
                                 {/* Flip vertical */}
@@ -695,7 +697,7 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                                     disabled={drawingMode || !canvas}
                                     onClick={() => { centerSelected() }}
                                 >
-                                    <FontAwesomeIcon icon={faArrowsToDot} />
+                                    <FaArrowsToDot />
                                 </button>
 
                                 {/* To canvas size */}
@@ -718,7 +720,7 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                                     disabled={drawingMode || !canvas}
                                     onClick={() => { selectedToCanvasSize('contain') }}
                                 >
-                                    <FontAwesomeIcon icon={faCropSimple} />
+                                    <FaCropSimple />
                                 </button>
                             </>
                         }
@@ -744,7 +746,7 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                             disabled={zoom <= 0.2}
                             onClick={() => { setZoom(zoom - 0.1) }}
                         >
-                            <FontAwesomeIcon icon={faMagnifyingGlassMinus} />
+                            <FaMagnifyingGlassMinus />
                         </button>
 
                         <Tooltip
@@ -766,7 +768,7 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                             disabled={zoom >= 2}
                             onClick={() => { setZoom(zoom + 0.1) }}
                         >
-                            <FontAwesomeIcon icon={faMagnifyingGlassPlus} />
+                            <FaMagnifyingGlassPlus />
                         </button>
 
                         <Tooltip
@@ -787,7 +789,7 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                             )}
                             onClick={() => { uploadImage() }}
                         >
-                            <FontAwesomeIcon icon={faImage} />
+                            <FaImage />
                         </button>
 
                         <Tooltip
@@ -808,7 +810,7 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                             )}
                             onClick={() => { insertFromClipboard() }}
                         >
-                            <FontAwesomeIcon icon={faClipboard} />
+                            <FaClipboard />
                         </button>
 
                         <Tooltip
@@ -834,7 +836,7 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                                 canvas!.backgroundColor = 'white'
                             }}
                         >
-                            <FontAwesomeIcon icon={faEmptySet} />
+                            <PiEmpty />
                         </button>
 
                         <Tooltip
@@ -855,7 +857,7 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                             )}
                             onClick={() => { saveAsImage() }}
                         >
-                            <FontAwesomeIcon icon={faDownload} />
+                            <FaDownload />
                         </button>
 
                         {/* Fullscreen */}
@@ -877,7 +879,7 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                             )}
                             onClick={() => { setFullscreen(!fullscreen) }}
                         >
-                            <FontAwesomeIcon icon={faExpand} />
+                            <FaExpand />
                         </button>
                     </div>
 
@@ -904,7 +906,7 @@ const Canvas = forwardRef<CanvasType, CanvasProps>(function Canvas (props, ref) 
                                     className="px-2 py-1 h-full border-r-2 border-gray-300 hover:bg-gray-100 flex flex-row items-center"
                                     onClick={() => { addText() }}
                                 >
-                                    <FontAwesomeIcon icon={faSignature} />
+                                    <FaSignature />
                                 </button>
 
                                 <Tooltip

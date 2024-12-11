@@ -1,5 +1,3 @@
-import { faDiscord } from "@fortawesome/free-brands-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import Link from "next/link"
 
 interface DefaultFooterProps {
@@ -11,7 +9,7 @@ interface DefaultFooterProps {
         social: {
             name: string,
             href: string,
-            icon: any,
+            icon: () => JSX.Element,
         }[],
     }
     copyright?: string
@@ -33,7 +31,7 @@ export default function DefaultFooter({ navigation, copyright }: DefaultFooterPr
                     {navigation.social.map((item) => (
                         <Link key={item.name} href={item.href} className="text-gray-400 hover:text-gray-500">
                             <span className="sr-only">{item.name}</span>
-                            <FontAwesomeIcon icon={item.icon} height={20} className="text-base text-gray-500 hover:text-gray-900" />
+                            <item.icon />
                         </Link>
                     ))}
                 </div>

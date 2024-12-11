@@ -5,12 +5,11 @@ import Image from "next/legacy/image"
 import Link from 'next/link'
 import { Fragment } from 'react'
 import Spinner from './spinner'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBars, faTimes } from '@fortawesome/pro-solid-svg-icons'
 import { StaticImageData } from 'next/image'
 import setLanguage from 'next-translate/setLanguage'
 import { Capacitor } from '@capacitor/core'
 import { Browser } from '@capacitor/browser'
+import { FaBars, FaTimes } from 'react-icons/fa'
 
 interface DefaultNavbarType {
     logo?: StaticImageData,
@@ -74,9 +73,9 @@ function DefaultNavbar ({ navigationLinks = [], logo, logoText, user, showUser =
                                         <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
                                             <span className="sr-only">Open main menu</span>
                                             {open ? (
-                                                <FontAwesomeIcon icon={faTimes} className="block h-6 w-6" aria-hidden="true" />
+                                                <FaTimes className="block h-6 w-6" aria-hidden="true" />
                                             ) : (
-                                                <FontAwesomeIcon icon={faBars} className="block h-6 w-6" aria-hidden="true" />
+                                                <FaBars className="block h-6 w-6" aria-hidden="true" />
                                             )}
                                         </Disclosure.Button>
                                     }
