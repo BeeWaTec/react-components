@@ -2,6 +2,7 @@ import React, {
   forwardRef,
   MutableRefObject,
   ReactNode,
+  RefObject,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -68,7 +69,7 @@ const InputField = forwardRef((props: InputFieldProps, ref) => {
   let timerSelectAll: any = null;
 
   // Reference to input field
-  const inputRef = useRef() as MutableRefObject<HTMLInputElement>;
+  const inputRef = useRef(null) as RefObject<HTMLInputElement>;
 
   // Create states
   const [value, setValue] = useState<string | number | undefined>(props.value);

@@ -1,4 +1,4 @@
-import React, { MutableRefObject, ReactNode, useEffect, useRef, useState } from "react";
+import React, { MutableRefObject, ReactNode, RefObject, useEffect, useRef, useState } from "react";
 import { Combobox } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import classNames from "classnames";
@@ -37,11 +37,11 @@ export default function ComboField({
   ...props
 }: ComboFieldProps): React.ReactElement {
   // Create references
-  let retryTimer: MutableRefObject<NodeJS.Timeout | null> = useRef(null);
-  let updateTimer: MutableRefObject<NodeJS.Timeout | null> = useRef(null);
-  let isMounted: MutableRefObject<boolean> = useRef<boolean>(false);
-  let comboRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
-  const inputRef = useRef() as MutableRefObject<HTMLInputElement>;
+  const retryTimer: RefObject<NodeJS.Timeout | null> = useRef(null);
+  const updateTimer: RefObject<NodeJS.Timeout | null> = useRef(null);
+  const isMounted: RefObject<boolean> = useRef<boolean>(false);
+  const comboRef: RefObject<HTMLDivElement | null> = useRef(null);
+  const inputRef = useRef(null);
 
   // Create states
   const [selected, setSelected] = useState<string | number | null>(props.selected ?? null);

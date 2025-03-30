@@ -1,4 +1,4 @@
-import React, { forwardRef, MutableRefObject, ReactNode, useEffect, useRef, useState } from "react";
+import React, { forwardRef, MutableRefObject, ReactNode, RefObject, useEffect, useRef, useState } from "react";
 import axiosInstance from "@/helpers/base/axios";
 import { toast } from "react-toastify";
 import classNames from "classnames";
@@ -41,7 +41,7 @@ const TextArea = forwardRef(
     ref,
   ) => {
     // Reference to input field
-    const inputRef = useRef() as MutableRefObject<HTMLTextAreaElement>;
+    const inputRef = useRef(null) as RefObject<HTMLTextAreaElement>;
 
     // Create states
     const [value, setValue] = useState<string | number | undefined>(props.value);

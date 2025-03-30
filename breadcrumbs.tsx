@@ -1,6 +1,7 @@
 import { HomeIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import Spinner from "./spinner";
+import { JSX } from "react";
 
 interface Props {
   homeHref?: string | null;
