@@ -41,7 +41,7 @@ const TextArea = forwardRef(
     ref,
   ) => {
     // Reference to input field
-    const inputRef = useRef(null) as RefObject<HTMLTextAreaElement>;
+    const inputRef = useRef<HTMLTextAreaElement>(null);
 
     // Create states
     const [value, setValue] = useState<string | number | undefined>(props.value);
@@ -55,7 +55,7 @@ const TextArea = forwardRef(
       try {
         setOngoingSubmit(true);
         const formData = new FormData();
-        formData.append(updateValueKey, inputRef.current.value);
+        formData.append(updateValueKey, inputRef.current?.value || "");
         if (typeof props.updateValueParams !== "undefined" && props.updateValueParams !== null) {
           for (const [key, value] of Object.entries(props.updateValueParams)) {
             formData.append(key, value as string);
@@ -98,7 +98,9 @@ const TextArea = forwardRef(
           if (response != null && response.status === 200) {
             const data = response.data;
             if (typeof data.required !== "undefined" && data.required !== null) {
-              inputRef.current.required = data.required;
+              if (inputRef.current) {
+                inputRef.current.required = data.required;
+              }
             }
           } else {
             // Retry after 1 second

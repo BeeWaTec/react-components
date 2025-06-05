@@ -53,7 +53,7 @@ const InputRange = forwardRef(
     let timerSelectAll: any = null;
 
     // Reference to input field
-    const inputRef = useRef(null) as RefObject<HTMLInputElement>;
+    const inputRef = useRef<HTMLInputElement>(null);
 
     // Create states
     const [value, setValue] = useState<string | number | undefined>(props.value);

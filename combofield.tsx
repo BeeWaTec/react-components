@@ -1,8 +1,8 @@
-import React, { MutableRefObject, ReactNode, RefObject, useEffect, useRef, useState } from 'react'
-import { Combobox } from '@headlessui/react'
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
-import classNames from 'classnames'
-import axios, { AxiosInstance } from 'axios'
+import React, { MutableRefObject, ReactNode, RefObject, useEffect, useRef, useState } from "react";
+import { Combobox } from "@headlessui/react";
+import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+import classNames from "classnames";
+import axios, { AxiosInstance } from "axios";
 
 interface ComboFieldProps {
   className?: string;
@@ -41,13 +41,12 @@ export default function ComboField({
   const updateTimer: RefObject<NodeJS.Timeout | null> = useRef(null);
   const isMounted: RefObject<boolean> = useRef<boolean>(false);
   const comboRef: RefObject<HTMLDivElement | null> = useRef(null);
-  const inputRef = useRef(null);
 
-    // Create references
-    let retryTimer: RefObject <NodeJS.Timeout | null> = useRef(null)
-    let updateTimer: RefObject <NodeJS.Timeout | null> = useRef(null)
-    let isMounted: RefObject <boolean> = useRef<boolean>(false)
-    let comboRef: RefObject <HTMLDivElement | null> = useRef(null)
+  // Create states
+  const [selected, setSelected] = useState<string | number | null>(props.selected ?? null);
+  const [values, setValues] = useState<{ value: string | number; label: string }[] | undefined>(props.values);
+  const [showDropdown, setShowDropdown] = useState<boolean>(false);
+  const [loadingData, setLoadingData] = useState<boolean>(false);
 
   // Create axios instance
   let axiosInstance: AxiosInstance | null;

@@ -69,7 +69,7 @@ const InputField = forwardRef((props: InputFieldProps, ref) => {
   let timerSelectAll: any = null;
 
   // Reference to input field
-  const inputRef = useRef(null) as RefObject<HTMLInputElement>;
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Create states
   const [value, setValue] = useState<string | number | undefined>(props.value);
@@ -83,7 +83,7 @@ const InputField = forwardRef((props: InputFieldProps, ref) => {
     try {
       setOngoingSubmit(true);
       const formData = new FormData();
-      formData.append(updateValueKey, inputRef.current.value);
+      formData.append(updateValueKey, inputRef.current?.value || '');
       if (typeof props.updateValueParams !== "undefined" && props.updateValueParams !== null) {
         for (const [key, value] of Object.entries(props.updateValueParams)) {
           formData.append(key, value as string);
@@ -123,7 +123,7 @@ const InputField = forwardRef((props: InputFieldProps, ref) => {
           }
           return null;
         });
-        if (response != null && response.status === 200) {
+        if (response != null && response.status === 200 && inputRef.current) {
           const data = response.data;
           if (typeof data.pattern !== "undefined" && data.pattern !== null) {
             inputRef.current.pattern = data.pattern;
